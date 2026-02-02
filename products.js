@@ -34,8 +34,11 @@ const Products = {
 
     // UI Rendering
     render: function () {
-        const tbody = document.querySelector('#productsTable tbody');
-        if (!tbody) return;
+        const tbody = document.getElementById('productsTableBody');
+        if (!tbody) {
+            console.warn("Products Table Body not found");
+            return;
+        }
 
         tbody.innerHTML = '';
         const products = this.getAll();

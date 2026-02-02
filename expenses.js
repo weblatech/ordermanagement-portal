@@ -37,8 +37,11 @@ const Expenses = {
     },
 
     render: function () {
-        const tbody = document.querySelector('#expensesTable tbody');
-        if (!tbody) return;
+        const tbody = document.getElementById('expensesTableBody');
+        if (!tbody) {
+            console.warn("Expenses Table Body not found");
+            return;
+        }
 
         tbody.innerHTML = '';
         const list = this.getAll();
