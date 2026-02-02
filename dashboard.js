@@ -2,10 +2,101 @@ const Dashboard = {
     statusChart: null,
     courierChart: null,
 
+    // Filter State
+    filterStart: null,
+    filterEnd: null,
+
+    setDateRange: function (range) {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // 00:00:00
+
+        let start = null;
+        let end = new Date(today); // Default end is today
+
+        if (range === 'today') {
+            start = new Date(today);
+        } else if (range === 'yesterday') {
+            start = new Date(today);
+            start.setDate(today.getDate() - 1);
+            end = new Date(start);
+        } else if (range === 'week') {
+            // Last 7 Days
+            start = new Date(today);
+            start.setDate(today.getDate() - 6);
+        } else if (range === 'month') {
+            // This Month (1st to Today)
+            start = new Date(today.getFullYear(), today.getMonth(), 1);
+        } else if (range === 'all') {
+            start = null;
+            end = null;
+        }
+
+        // Update Inputs
+        this.setDatePickerValue('filter-start-date', start);
+        this.setDatePickerValue('filter-end-date', end);
+
+        // Auto Apply
+        this.applyDateFilter();
+    },
+
+    setDatePickerValue: function (id, date) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (date) {
+            // Format YYYY-MM-DD for input type="date"
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            el.value = `${year}-${month}-${day}`;
+        } else {
+            el.value = '';
+        }
+    },
+
+    applyDateFilter: function () {
+        const startInput = document.getElementById('filter-start-date').value;
+        const endInput = document.getElementById('filter-end-date').value;
+
+        if (startInput) {
+            this.filterStart = new Date(startInput);
+            // new Date("YYYY-MM-DD") returns UTC 00:00. This might be off by timezone.
+            // Better to use explicit construction to ensure local midnight.
+            const [y, m, d] = startInput.split('-').map(Number);
+            this.filterStart = new Date(y, m - 1, d);
+        } else {
+            this.filterStart = null;
+        }
+
+        if (endInput) {
+            const [y, m, d] = endInput.split('-').map(Number);
+            this.filterEnd = new Date(y, m - 1, d);
+        } else {
+            this.filterEnd = null;
+        }
+
+        // Re-render
+        this.render();
+
+        // Highlight Active Button (Visual Feedback)
+        // (Optional: clear active states)
+    },
+
+    getFilteredOrders: function (orders) {
+        if (!this.filterStart || !this.filterEnd) return orders;
+        return orders.filter(o => {
+            const d = parseDate(o.date);
+            // Compare timestamps
+            return d && d.getTime() >= this.filterStart.getTime() && d.getTime() <= this.filterEnd.getTime();
+        });
+    },
+
     render: function (ordersData) {
         // Use argument or fallback to App state
-        const orders = ordersData || App.state.orders;
-        if (!orders || orders.length === 0) return;
+        const rawOrders = ordersData || App.state.orders;
+        if (!rawOrders) return;
+
+        // Apply Filter
+        const orders = this.getFilteredOrders(rawOrders);
 
         this.updateKPIs(orders);
         this.renderCharts(orders);
@@ -89,7 +180,7 @@ const Dashboard = {
         this.setSafeText('kpi-returned-amount', returnedAmount.toLocaleString());
 
         // Expense & Profit
-        const totalExpenses = Expenses.getTotal();
+        const totalExpenses = Expenses.getTotal(this.filterStart, this.filterEnd);
         const netProfit = deliveredAmount - totalExpenses;
 
         this.setSafeText('kpi-expenses', totalExpenses.toLocaleString());

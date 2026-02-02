@@ -31,8 +31,22 @@ const Expenses = {
         Dashboard.render(); // Update Profit/Loss
     },
 
-    getTotal: function () {
-        const list = this.getAll();
+    getTotal: function (startDate, endDate) {
+        let list = this.getAll();
+
+        if (startDate && endDate) {
+            // startDate and endDate should be Date objects
+            // normalization: start at 00:00:00, end at 23:59:59 if needed, 
+            // but parseDate returns 00:00:00. 
+            // If we compare strictly, let's just use simple object comparison which uses milliseconds.
+            // Since all our dates (from parseDate) are 00:00:00, strict inequalities work for day granularity.
+
+            list = list.filter(item => {
+                const d = parseDate(item.date);
+                return d && d >= startDate && d <= endDate;
+            });
+        }
+
         return list.reduce((sum, item) => sum + item.amount, 0);
     },
 

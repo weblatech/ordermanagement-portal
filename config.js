@@ -36,3 +36,12 @@ const STATUS_COLORS = {
     "Pending": "#6b7280",
     "Cancelled": "#9ca3af"
 };
+
+// Global Date Parser (DD/MM/YYYY to Date Object)
+function parseDate(dateStr) {
+    if (!dateStr) return null;
+    const parts = dateStr.split('/');
+    if (parts.length !== 3) return null;
+    // Month is 0-indexed in JS Date
+    return new Date(parts[2], parts[1] - 1, parts[0]);
+}
