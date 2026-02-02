@@ -1,11 +1,15 @@
 const Orders = {
     render: function () {
-        const tbody = document.querySelector('#ordersTable tbody');
+        const tbody = document.getElementById('ordersTableBody');
+        if (!tbody) {
+            console.error("Critical Error: 'ordersTableBody' element not found in DOM.");
+            return;
+        }
         tbody.innerHTML = '';
 
         const orders = App.state.orders;
 
-        if (orders.length === 0) {
+        if (!orders || orders.length === 0) {
             tbody.innerHTML = '<tr><td colspan="7" class="text-center">No orders found.</td></tr>';
             return;
         }
@@ -21,23 +25,14 @@ const Orders = {
                 statusOptions += `<option value="${statusValue}" ${selected}>${statusValue}</option>`;
             }
 
-            // Determine Row Background based on status (Optional visual cue)
-            let rowClass = '';
-            if (order.status === STATUSES.DELIVERED) rowClass = 'table-success';
-            if (order.status === STATUSES.RETURN || order.status === STATUSES.READY_FOR_RETURN) rowClass = 'table-danger';
-
-            // Override rowClass logic to just be subtle or use badge logic within select? 
-            // Select dropdowns are hard to style individually. 
-            // Let's stick to a clean select.
-
             tr.innerHTML = `
                 <td>#${order.id}</td>
                 <td>${order.date}</td>
                 <td>
-                    <div class="fw-bold">${order.customer}</div>
-                    <small class="text-muted">${order.mobile}</small>
+                    <div class="fw-bold">${order.customer || '-'}</div>
+                    <small class="text-muted">${order.mobile || '-'}</small>
                 </td>
-                <td>Rs. ${order.price}</td>
+                <td>${CONFIG.CURRENCY} ${order.price}</td>
                 <td>${order.courier}</td>
                 <td>
                     <select class="form-select form-select-sm" onchange="Orders.updateStatus(${order.id}, this.value)">

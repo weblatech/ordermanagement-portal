@@ -201,8 +201,9 @@ const App = {
             this.renderAll(orders);
         } catch (error) {
             console.error("Failed to load data:", error);
-            // Detailed Alert
-            alert("Data Load Error:\n" + error.message + "\n\n(Check Console for details)");
+            // Detailed Alert with Stack
+            const stack = error.stack ? error.stack.split('\n')[1] : "No stack";
+            alert("Data Load Error:\n" + error.message + "\n\nLocation: " + stack);
         } finally {
             if (!isDataLoaded) {
                 // Only warn if we really have nothing
