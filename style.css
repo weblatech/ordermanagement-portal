@@ -316,3 +316,89 @@ body.dark-mode .filter-input::-webkit-calendar-picker-indicator {
         flex-direction: column;
     }
 }
+
+/* Mobile Responsiveness */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.sidebar-overlay.active {
+    display: block;
+}
+
+#sidebarToggle {
+    display: none;
+    /* Hidden on desktop */
+}
+
+@media (max-width: 768px) {
+
+    /* Main Layout Adjustments */
+    .sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+        /* Slightly wider on mobile for better touch */
+        box-shadow: none;
+        /* Shadow handled by overlay or when active */
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        /* Force override */
+        padding: 1rem;
+        /* Less padding on mobile */
+    }
+
+    /* Toggle Button */
+    #sidebarToggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: white;
+        color: var(--primary-color);
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1rem;
+        transition: all 0.2s;
+    }
+
+    #sidebarToggle:active {
+        transform: scale(0.95);
+        background: #f9fafb;
+    }
+
+    /* Adjust Grid for Mobile */
+    .filter-bar .card-body {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .filter-bar .d-flex {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .filter-bar input[type="date"] {
+        flex: 1;
+    }
+
+    /* Make tables scrollable */
+    .table-responsive {
+        overflow-x: auto;
+    }
+}

@@ -57,6 +57,23 @@ const App = {
             });
         }
 
+        // Setup Mobile Sidebar Toggle
+        const toggleBtn = document.getElementById('sidebarToggle');
+        const overlay = document.getElementById('sidebarOverlay');
+        const sidebar = document.querySelector('.sidebar');
+
+        if (toggleBtn && sidebar && overlay) {
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.add('active');
+                overlay.classList.add('active');
+            });
+
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+        }
+
         // Setup Logout
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
