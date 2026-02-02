@@ -8,6 +8,14 @@ const App = {
         if (this.initialized) return;
         this.initialized = true;
 
+        // DEBUG: Signal Ready
+        const stat = document.getElementById('sys-status');
+        if (stat) {
+            stat.style.background = 'green';
+            stat.innerText = "System Status: Online & Ready";
+            setTimeout(() => stat.style.display = 'none', 3000);
+        }
+
         console.log("Auth Init...");
         // Initialize Auth Module (Login/Register)
         Auth.init();
