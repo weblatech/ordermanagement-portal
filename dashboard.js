@@ -484,7 +484,7 @@ const Dashboard = {
             container.innerHTML += `
                 <div class="activity-item d-flex align-items-center justify-content-between">
                     <div>
-                        <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.9rem;">${o.customerName}</h6>
+                        <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.9rem;">${o.customer || 'Customer'}</h6>
                         <small class="text-muted d-block">${o.product} - ${this.formatCurrency(o.price)}</small>
                     </div>
                     <span class="badge bg-light text-secondary border">${o.date}</span>
