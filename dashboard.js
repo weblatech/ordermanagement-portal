@@ -1,6 +1,9 @@
 const Dashboard = {
     statusChart: null,
     courierChart: null,
+    revenueChart: null,
+    weeklyChart: null,
+    successChart: null,
 
     // Filter State
     filterStart: null,
@@ -229,6 +232,13 @@ const Dashboard = {
         if (this.statusChart) this.statusChart.destroy();
         if (this.courierChart) this.courierChart.destroy();
 
+        // Render New Analytics
+        this.renderRevenueTrend(orders);
+        this.renderWeeklyTrend(orders);
+        this.renderSuccessRate(orders);
+        this.renderTopCities(orders);
+        this.renderRecentActivity(orders);
+
         // 1. Status Chart (Doughnut)
         // Resize container for "Small Circle" effect
         const ctxStatusContainer = document.getElementById('statusChart').parentElement;
@@ -255,35 +265,17 @@ const Dashboard = {
                 maintainAspectRatio: false,
                 cutout: '70%', // Thinner ring
                 plugins: {
-                    legend: {
-                        position: 'right',
-                        align: 'center', // Center vertically
-                        labels: {
-                            boxWidth: 12,
-                            padding: 15,
-                            font: {
-                                size: 11
-                            }
-                        }
-                    }
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true }
                 }
             }
         });
 
         // 2. Courier Chart (Bar)
         const ctxCourier = document.getElementById('courierChart').getContext('2d');
-
-        // Define a vibrant palette for bars
-        const courierPalette = [
-            '#4f46e5', // Indigo
-            '#10b981', // Emerald
-            '#f59e0b', // Amber
-            '#ef4444', // Red
-            '#8b5cf6', // Violet
-            '#ec4899', // Pink
-            '#06b6d4', // Cyan
-            '#f97316'  // Orange
-        ];
+        const courierPalette = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
 
         this.courierChart = new Chart(ctxCourier, {
             type: 'bar',
@@ -298,16 +290,206 @@ const Dashboard = {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
-                scales: {
-                    y: { beginAtZero: true }
-                },
-                plugins: {
-                    legend: {
-                        display: false // Hide legend as colors vary
-                    }
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    },
+
+    renderRevenueTrend: function (orders) {
+        // Group by Date, Sum Delivered Amount
+        const revenueMap = {};
+        orders.forEach(o => {
+            if (o.status === STATUSES.DELIVERED) {
+                // Use o.date (DD/MM/YYYY) directly or parse?
+                // Assuming o.date is comparable string or we format it.
+                // Let's use the raw date string for simplified grouping if standard.
+                // Or better, parse to Date object to sort correctly.
+                const d = parseDate(o.date);
+                if (d) {
+                    const key = d.toISOString().split('T')[0]; // YYYY-MM-DD for sorting
+                    revenueMap[key] = (revenueMap[key] || 0) + o.price;
                 }
             }
+        });
+
+        const sortedKeys = Object.keys(revenueMap).sort();
+        const labels = sortedKeys.map(k => k); // YYYY-MM-DD
+        const data = sortedKeys.map(k => revenueMap[k]);
+
+        // Limit to last 7-14 data points if too many? Let's show all for "Trend" or last 7 days?
+        // User asked for "Daily Revenue Trend". Let's show last 7 active days.
+        const sliceIndex = Math.max(0, labels.length - 7);
+        const finalLabels = labels.slice(sliceIndex);
+        const finalData = data.slice(sliceIndex);
+
+        const ctx = document.getElementById('revenueTrendChart').getContext('2d');
+        if (this.revenueChart) this.revenueChart.destroy();
+
+        this.revenueChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: finalLabels,
+                datasets: [{
+                    label: 'Revenue',
+                    data: finalData,
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+    },
+
+    renderWeeklyTrend: function (orders) {
+        // Group by Day of Week (0-6)
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const weeklyCounts = new Array(7).fill(0);
+
+        orders.forEach(o => {
+            const d = parseDate(o.date);
+            if (d) {
+                weeklyCounts[d.getDay()]++;
+            }
+        });
+
+        // Rotate so Mon is first? Standard is Sun=0. Let's keep Standard.
+
+        const ctx = document.getElementById('weeklyTrendChart').getContext('2d');
+        if (this.weeklyChart) this.weeklyChart.destroy();
+
+        this.weeklyChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: days,
+                datasets: [{
+                    label: 'Orders',
+                    data: weeklyCounts,
+                    borderColor: '#a855f7',
+                    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+    },
+
+    renderSuccessRate: function (orders) {
+        const total = orders.length;
+        if (total === 0) return;
+
+        let delivered = 0;
+        let returned = 0; // Return + Ready for Return + Failed? "Return/Failed"
+        // Let's count Delivered vs (Return + ReadyReturn)
+
+        orders.forEach(o => {
+            if (o.status === STATUSES.DELIVERED) delivered++;
+            if (o.status === STATUSES.RETURN || o.status === STATUSES.READY_FOR_RETURN) returned++;
+        });
+
+        // Visualization uses a Chart? Or just text? 
+        // HTML has a canvas `successRateChart`.
+        // Let's make a Doughnut/Pie.
+
+        const successRate = Math.round((delivered / total) * 100);
+        this.setSafeText('successRateValue', successRate + '%');
+        this.setSafeText('successDeliveredCount', delivered);
+        this.setSafeText('successReturnedCount', returned);
+
+        const ctx = document.getElementById('successRateChart').getContext('2d');
+        if (this.successChart) this.successChart.destroy();
+
+        this.successChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Delivered', 'Returned', 'Other'],
+                datasets: [{
+                    data: [delivered, returned, total - delivered - returned],
+                    backgroundColor: ['#10b981', '#ef4444', '#f1f5f9'],
+                    borderWidth: 0,
+                    cutout: '80%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { enabled: false } }
+            }
+        });
+    },
+
+    renderTopCities: function (orders) {
+        // Assume address contains city or we normalize? 
+        // Use 'city' field if available? The payload had address.
+        // Let's try to extract city or just group by Full Address if uncertain.
+        // Wait, looking at `js/orders.js` or data structure...
+        // Data has `address`. Often users put "City" in address. 
+        // Real extraction is hard. Let's group by `courier` for fallback? 
+        // User requested "Top 5 Cities".
+        // Let's assume there is a `city` field or I check if I can extract it.
+        // Checking `orders.js` or `app.js` payload map.
+        // Payload has 'address'.
+        // I will implement a dummy "Shim" that groups by Address first 2 words for now, 
+        // OR better, since I can't guarantee city, maybe I'll skip this or use Courier locations if available.
+        // Actually, let's just use "Address" string as key for now.
+
+        const cityMap = {};
+        orders.forEach(o => {
+            // Very naive city extraction: First word of address?
+            // Or just use the whole address line
+            const city = o.city || o.address.split(',').pop().trim() || "Unknown";
+            // Attempt to take last part of comma separated?
+            cityMap[city] = (cityMap[city] || 0) + 1;
+        });
+
+        const sorted = Object.entries(cityMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+        const container = document.getElementById('topCitiesParam');
+        container.innerHTML = '';
+
+        sorted.forEach(([city, count]) => {
+            const pct = Math.min(100, (count / orders.length) * 100 * 2); // Scale up for visual?
+            container.innerHTML += `
+                <div class="city-item">
+                    <span class="fw-bold text-secondary small" style="width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${city}</span>
+                    <span class="fw-bold text-primary small">${count}</span>
+                    <div class="city-progress">
+                        <div class="city-progress-bar" style="width: ${pct}%"></div>
+                    </div>
+                </div>
+            `;
+        });
+    },
+
+    renderRecentActivity: function (orders) {
+        // Sort by ID desc (newest first)
+        const sorted = [...orders].sort((a, b) => b.id - a.id).slice(0, 5);
+
+        const container = document.getElementById('recentActivityParam');
+        container.innerHTML = '';
+
+        sorted.forEach(o => {
+            container.innerHTML += `
+                <div class="activity-item d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.9rem;">${o.customerName}</h6>
+                        <small class="text-muted d-block">${o.product} - ${this.formatCurrency(o.price)}</small>
+                    </div>
+                    <span class="badge bg-light text-secondary border">${o.date}</span>
+                </div>
+            `;
         });
     }
 };

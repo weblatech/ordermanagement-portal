@@ -402,3 +402,49 @@ body.dark-mode .filter-input::-webkit-calendar-picker-indicator {
         overflow-x: auto;
     }
 }
+
+/* Advanced Analytics Styles */
+.chart-card {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    transition: transform 0.2s;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    margin: auto;
+}
+
+.activity-feed .activity-item {
+    padding: 1rem;
+    background: var(--light-bg);
+    border-radius: 0.75rem;
+    border-left: 4px solid var(--primary-color);
+    transition: background 0.2s;
+}
+
+.activity-feed .activity-item:hover {
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.city-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+}
+
+.city-progress {
+    height: 6px;
+    border-radius: 10px;
+    background: #e2e8f0;
+    width: 100px;
+    overflow: hidden;
+}
+
+.city-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #6366f1, #a855f7);
+    border-radius: 10px;
+}

@@ -344,21 +344,92 @@
                     </div>
                 </div>
 
-                <!-- Row 4: Charts -->
-                <div class="row g-4">
-                    <div class="col-lg-8 col-12">
-                        <div class="card h-100 border-0 shadow-sm p-3" style="border-radius: 1rem;">
+                <!-- Row 4: Status & Revenue Trend -->
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-5 col-12">
+                        <div class="card h-100 border-0 shadow-sm p-3 chart-card">
                             <h5 class="card-title mb-3 fw-bold text-secondary">Orders by Status</h5>
-                            <div style="height: 300px; display: flex; justify-content: center;">
+                            <div class="chart-container" style="height: 300px; display: flex; justify-content: center;">
                                 <canvas id="statusChart"></canvas>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-12">
-                        <div class="card h-100 border-0 shadow-sm p-3" style="border-radius: 1rem;">
+                    <div class="col-lg-7 col-12">
+                        <div class="card h-100 border-0 shadow-sm p-3 chart-card">
+                            <h5 class="card-title mb-3 fw-bold text-secondary">Daily Revenue Trend</h5>
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="revenueTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 5: Courier & Weekly Trend -->
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-6 col-12">
+                        <div class="card h-100 border-0 shadow-sm p-3 chart-card">
                             <h5 class="card-title mb-3 fw-bold text-secondary">Courier Performance</h5>
-                            <div style="height: 300px;">
+                            <div class="chart-container" style="height: 300px;">
                                 <canvas id="courierChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <div class="card h-100 border-0 shadow-sm p-3 chart-card">
+                            <h5 class="card-title mb-3 fw-bold text-secondary">Weekly Order Trend</h5>
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="weeklyTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 6: Success Rate, Cities, Activity -->
+                <div class="row g-4 mb-4">
+                    <!-- Delivery Success Rate -->
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="card h-100 border-0 shadow-sm p-3 chart-card">
+                            <h5 class="card-title mb-3 fw-bold text-secondary">Delivery Success Rate</h5>
+                            <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                                <div class="position-relative d-flex justify-content-center align-items-center mb-3">
+                                    <canvas id="successRateChart" width="200" height="200"></canvas>
+                                    <h2 class="position-absolute fw-bold text-success mb-0" id="successRateValue">0%
+                                    </h2>
+                                </div>
+                                <div class="d-flex justify-content-around w-100 mt-2">
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge rounded-circle bg-success p-1 me-2"> </span>
+                                        <span class="small text-secondary fw-bold">Delivered</span>
+                                        <span class="ms-2 fw-bold" id="successDeliveredCount">0</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge rounded-circle bg-danger p-1 me-2"> </span>
+                                        <span class="small text-secondary fw-bold">Return/Failed</span>
+                                        <span class="ms-2 fw-bold" id="successReturnedCount">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top 5 Cities -->
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="card h-100 border-0 shadow-sm p-3 chart-card">
+                            <h5 class="card-title mb-3 fw-bold text-secondary">Top 5 Cities</h5>
+                            <div id="topCitiesParam" class="d-flex flex-column gap-3 overflow-auto"
+                                style="max-height: 300px;">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="col-lg-4 col-12">
+                        <div class="card h-100 border-0 shadow-sm p-3 chart-card">
+                            <h5 class="card-title mb-3 fw-bold text-secondary">Recent Activity</h5>
+                            <div id="recentActivityParam" class="activity-feed d-flex flex-column gap-3 overflow-auto"
+                                style="max-height: 300px;">
+                                <!-- Populated by JS -->
                             </div>
                         </div>
                     </div>
