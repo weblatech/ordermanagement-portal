@@ -101,11 +101,11 @@ const Dashboard = {
         // Apply Filter
         const orders = this.getFilteredOrders(rawOrders);
 
-        this.updateKPIs(orders);
+        this.updateKPIs(orders, rawOrders);
         this.renderCharts(orders);
     },
 
-    updateKPIs: function (orders) {
+    updateKPIs: function (orders, allOrders) {
         const today = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY
 
         let todayCount = 0;
@@ -190,291 +190,332 @@ const Dashboard = {
         this.setSafeText('kpi-profit', this.formatCurrency(netProfit));
 
         // Color Logic for Profit
-        const profitEl = document.getElementById('kpi-profit');
-        if (profitEl) {
-            if (netProfit >= 0) {
-                profitEl.className = "stat-value text-success";
-            } else {
-                profitEl.className = "stat-value text-danger";
+        if (netProfit >= 0) {
+            profitEl.className = "stat-value text-success";
+        } else {
+            profitEl.className = "stat-value text-danger";
+        }
+    }
+
+        // 6. Growth Rate (vs Previous Period)
+        const growthEl = document.getElementById('kpi-growth');
+    if(growthEl) {
+        let growth = 0;
+        let validComparison = false;
+
+        // Only calculate if a date range is selected
+        if (this.filterStart && this.filterEnd && allOrders) {
+            const duration = this.filterEnd.getTime() - this.filterStart.getTime();
+            // Previous period ends yesterday relative to current start
+            const prevEnd = new Date(this.filterStart.getTime() - 86400000);
+            const prevStart = new Date(prevEnd.getTime() - duration);
+
+            // Calculate Previous Revenue
+            let prevRevenue = 0;
+            allOrders.forEach(o => {
+                const d = parseDate(o.date);
+                // Compare including boundaries
+                if (d && d.getTime() >= prevStart.getTime() && d.getTime() <= prevEnd.getTime()) {
+                    // Only Count Delivered or All? Usually Growth is on Revenue (Delivered)
+                    if (o.status === STATUSES.DELIVERED) {
+                        prevRevenue += o.price;
+                    }
+                }
+            });
+
+            if (prevRevenue > 0) {
+                growth = ((deliveredAmount - prevRevenue) / prevRevenue) * 100;
+                validComparison = true;
             }
         }
-    },
+
+        if (validComparison) {
+            const sign = growth > 0 ? '+' : '';
+            growthEl.innerText = `${sign}${growth.toFixed(1)}%`;
+            growthEl.className = growth >= 0 ? "stat-value text-success" : "stat-value text-danger";
+        } else {
+            growthEl.innerText = "-";
+            // Keep muted if no comparison
+            growthEl.className = "stat-value text-muted";
+        }
+    }
+},
 
     setSafeText: function (id, val) {
         const el = document.getElementById(id);
-        if (el) el.innerText = val;
+if (el) el.innerText = val;
     },
 
-    formatCurrency: function (num) {
-        return "Rs. " + (num || 0).toLocaleString();
-    },
+formatCurrency: function (num) {
+    return "Rs. " + (num || 0).toLocaleString();
+},
 
-    renderCharts: function (orders) {
-        // Prepare Data for Status Chart
-        const statusCounts = {};
-        orders.forEach(o => {
-            statusCounts[o.status] = (statusCounts[o.status] || 0) + 1;
-        });
+renderCharts: function (orders) {
+    // Prepare Data for Status Chart
+    const statusCounts = {};
+    orders.forEach(o => {
+        statusCounts[o.status] = (statusCounts[o.status] || 0) + 1;
+    });
 
-        const statusLabels = Object.keys(statusCounts);
-        const statusValues = Object.values(statusCounts);
-        // Map colors based on label
-        const statusColors = statusLabels.map(label => STATUS_COLORS[label] || '#cbd5e1');
+    const statusLabels = Object.keys(statusCounts);
+    const statusValues = Object.values(statusCounts);
+    // Map colors based on label
+    const statusColors = statusLabels.map(label => STATUS_COLORS[label] || '#cbd5e1');
 
-        // Prepare Data for Courier Chart
-        const courierCounts = {};
-        orders.forEach(o => {
-            const c = o.courier || "Unknown";
-            courierCounts[c] = (courierCounts[c] || 0) + 1;
-        });
+    // Prepare Data for Courier Chart
+    const courierCounts = {};
+    orders.forEach(o => {
+        const c = o.courier || "Unknown";
+        courierCounts[c] = (courierCounts[c] || 0) + 1;
+    });
 
-        // Destroy old charts if exist
-        if (this.statusChart) this.statusChart.destroy();
-        if (this.courierChart) this.courierChart.destroy();
+    // Destroy old charts if exist
+    if (this.statusChart) this.statusChart.destroy();
+    if (this.courierChart) this.courierChart.destroy();
 
-        // Render New Analytics
-        this.renderRevenueTrend(orders);
-        this.renderWeeklyTrend(orders);
-        this.renderSuccessRate(orders);
-        this.renderTopCities(orders);
-        this.renderRecentActivity(orders);
+    // Render New Analytics
+    this.renderRevenueTrend(orders);
+    this.renderWeeklyTrend(orders);
+    this.renderSuccessRate(orders);
+    this.renderTopCities(orders);
+    this.renderRecentActivity(orders);
 
-        // 1. Status Chart (Doughnut)
-        // Resize container for "Small Circle" effect
-        const ctxStatusContainer = document.getElementById('statusChart').parentElement;
-        if (ctxStatusContainer) {
-            ctxStatusContainer.style.height = '250px';
-            ctxStatusContainer.style.display = 'flex';
-            ctxStatusContainer.style.justifyContent = 'center';
+    // 1. Status Chart (Doughnut)
+    // Resize container for "Small Circle" effect
+    const ctxStatusContainer = document.getElementById('statusChart').parentElement;
+    if (ctxStatusContainer) {
+        ctxStatusContainer.style.height = '250px';
+        ctxStatusContainer.style.display = 'flex';
+        ctxStatusContainer.style.justifyContent = 'center';
+    }
+
+    const ctxStatus = document.getElementById('statusChart').getContext('2d');
+    this.statusChart = new Chart(ctxStatus, {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusValues,
+                backgroundColor: statusColors,
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%', // Thinner ring
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
         }
+    });
 
-        const ctxStatus = document.getElementById('statusChart').getContext('2d');
-        this.statusChart = new Chart(ctxStatus, {
-            type: 'doughnut',
-            data: {
-                labels: statusLabels,
-                datasets: [{
-                    data: statusValues,
-                    backgroundColor: statusColors,
-                    borderWidth: 0,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '70%', // Thinner ring
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
-        });
+    // 2. Courier Chart (Bar)
+    const ctxCourier = document.getElementById('courierChart').getContext('2d');
+    const courierPalette = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
 
-        // 2. Courier Chart (Bar)
-        const ctxCourier = document.getElementById('courierChart').getContext('2d');
-        const courierPalette = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
+    this.courierChart = new Chart(ctxCourier, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(courierCounts),
+            datasets: [{
+                label: 'Orders',
+                data: Object.values(courierCounts),
+                backgroundColor: Object.keys(courierCounts).map((_, i) => courierPalette[i % courierPalette.length]),
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+},
 
-        this.courierChart = new Chart(ctxCourier, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(courierCounts),
-                datasets: [{
-                    label: 'Orders',
-                    data: Object.values(courierCounts),
-                    backgroundColor: Object.keys(courierCounts).map((_, i) => courierPalette[i % courierPalette.length]),
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } }
-            }
-        });
-    },
-
-    renderRevenueTrend: function (orders) {
-        // Group by Date, Sum Delivered Amount
-        const revenueMap = {};
-        orders.forEach(o => {
-            if (o.status === STATUSES.DELIVERED) {
-                // Use o.date (DD/MM/YYYY) directly or parse?
-                // Assuming o.date is comparable string or we format it.
-                // Let's use the raw date string for simplified grouping if standard.
-                // Or better, parse to Date object to sort correctly.
-                const d = parseDate(o.date);
-                if (d) {
-                    const key = d.toISOString().split('T')[0]; // YYYY-MM-DD for sorting
-                    revenueMap[key] = (revenueMap[key] || 0) + o.price;
-                }
-            }
-        });
-
-        const sortedKeys = Object.keys(revenueMap).sort();
-        const labels = sortedKeys.map(k => k); // YYYY-MM-DD
-        const data = sortedKeys.map(k => revenueMap[k]);
-
-        // Limit to last 7-14 data points if too many? Let's show all for "Trend" or last 7 days?
-        // User asked for "Daily Revenue Trend". Let's show last 7 active days.
-        const sliceIndex = Math.max(0, labels.length - 7);
-        const finalLabels = labels.slice(sliceIndex);
-        const finalData = data.slice(sliceIndex);
-
-        const ctx = document.getElementById('revenueTrendChart').getContext('2d');
-        if (this.revenueChart) this.revenueChart.destroy();
-
-        this.revenueChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: finalLabels,
-                datasets: [{
-                    label: 'Revenue',
-                    data: finalData,
-                    borderColor: '#6366f1',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
-            }
-        });
-    },
-
-    renderWeeklyTrend: function (orders) {
-        // Group by Day of Week (0-6)
-        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const weeklyCounts = new Array(7).fill(0);
-
-        orders.forEach(o => {
+renderRevenueTrend: function (orders) {
+    // Group by Date, Sum Delivered Amount
+    const revenueMap = {};
+    orders.forEach(o => {
+        if (o.status === STATUSES.DELIVERED) {
+            // Use o.date (DD/MM/YYYY) directly or parse?
+            // Assuming o.date is comparable string or we format it.
+            // Let's use the raw date string for simplified grouping if standard.
+            // Or better, parse to Date object to sort correctly.
             const d = parseDate(o.date);
             if (d) {
-                weeklyCounts[d.getDay()]++;
+                const key = d.toISOString().split('T')[0]; // YYYY-MM-DD for sorting
+                revenueMap[key] = (revenueMap[key] || 0) + o.price;
             }
-        });
+        }
+    });
 
-        // Rotate so Mon is first? Standard is Sun=0. Let's keep Standard.
+    const sortedKeys = Object.keys(revenueMap).sort();
+    const labels = sortedKeys.map(k => k); // YYYY-MM-DD
+    const data = sortedKeys.map(k => revenueMap[k]);
 
-        const ctx = document.getElementById('weeklyTrendChart').getContext('2d');
-        if (this.weeklyChart) this.weeklyChart.destroy();
+    // Limit to last 7-14 data points if too many? Let's show all for "Trend" or last 7 days?
+    // User asked for "Daily Revenue Trend". Let's show last 7 active days.
+    const sliceIndex = Math.max(0, labels.length - 7);
+    const finalLabels = labels.slice(sliceIndex);
+    const finalData = data.slice(sliceIndex);
 
-        this.weeklyChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: days,
-                datasets: [{
-                    label: 'Orders',
-                    data: weeklyCounts,
-                    borderColor: '#a855f7',
-                    backgroundColor: 'rgba(168, 85, 247, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
-            }
-        });
-    },
+    const ctx = document.getElementById('revenueTrendChart').getContext('2d');
+    if (this.revenueChart) this.revenueChart.destroy();
 
-    renderSuccessRate: function (orders) {
-        const total = orders.length;
-        if (total === 0) return;
+    this.revenueChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: finalLabels,
+            datasets: [{
+                label: 'Revenue',
+                data: finalData,
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }
+        }
+    });
+},
 
-        let delivered = 0;
-        let returned = 0; // Return + Ready for Return + Failed? "Return/Failed"
-        // Let's count Delivered vs (Return + ReadyReturn)
+renderWeeklyTrend: function (orders) {
+    // Group by Day of Week (0-6)
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const weeklyCounts = new Array(7).fill(0);
 
-        orders.forEach(o => {
-            if (o.status === STATUSES.DELIVERED) delivered++;
-            if (o.status === STATUSES.RETURN || o.status === STATUSES.READY_FOR_RETURN) returned++;
-        });
+    orders.forEach(o => {
+        const d = parseDate(o.date);
+        if (d) {
+            weeklyCounts[d.getDay()]++;
+        }
+    });
 
-        // Visualization uses a Chart? Or just text? 
-        // HTML has a canvas `successRateChart`.
-        // Let's make a Doughnut/Pie.
+    // Rotate so Mon is first? Standard is Sun=0. Let's keep Standard.
 
-        const successRate = Math.round((delivered / total) * 100);
-        this.setSafeText('successRateValue', successRate + '%');
-        this.setSafeText('successDeliveredCount', delivered);
-        this.setSafeText('successReturnedCount', returned);
+    const ctx = document.getElementById('weeklyTrendChart').getContext('2d');
+    if (this.weeklyChart) this.weeklyChart.destroy();
 
-        const ctx = document.getElementById('successRateChart').getContext('2d');
-        if (this.successChart) this.successChart.destroy();
+    this.weeklyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: days,
+            datasets: [{
+                label: 'Orders',
+                data: weeklyCounts,
+                borderColor: '#a855f7',
+                backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }
+        }
+    });
+},
 
-        this.successChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Delivered', 'Returned', 'Other'],
-                datasets: [{
-                    data: [delivered, returned, total - delivered - returned],
-                    backgroundColor: ['#10b981', '#ef4444', '#f1f5f9'],
-                    borderWidth: 0,
-                    cutout: '80%'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false }, tooltip: { enabled: false } }
-            }
-        });
-    },
+renderSuccessRate: function (orders) {
+    const total = orders.length;
+    if (total === 0) return;
 
-    renderTopCities: function (orders) {
-        // Helper to extract city from address
-        const extractCity = (addr) => {
-            if (!addr) return "Unknown";
-            const cleanAddr = addr.toString().trim();
-            if (cleanAddr.includes(',')) {
-                return cleanAddr.split(',').pop().trim();
-            }
-            // Heuristic: If address is short, might be just city?
-            // If long, take last word?
-            // User examples: "Block E Johar Town Lahore" -> "Lahore" (Last word)
-            const parts = cleanAddr.split(/\s+/);
-            if (parts.length > 1) {
-                const last = parts[parts.length - 1];
-                // Filter out common non-city last words if needed (e.g. "Town", "Road")
-                // For now, simpler is better.
-                return last;
-            }
-            return cleanAddr;
-        };
+    let delivered = 0;
+    let returned = 0; // Return + Ready for Return + Failed? "Return/Failed"
+    // Let's count Delivered vs (Return + ReadyReturn)
 
-        const cityMap = {};
-        orders.forEach(o => {
-            let city = "Unknown";
-            if (o.city) {
-                city = o.city;
-            } else if (o.address) {
-                city = extractCity(o.address);
-            }
+    orders.forEach(o => {
+        if (o.status === STATUSES.DELIVERED) delivered++;
+        if (o.status === STATUSES.RETURN || o.status === STATUSES.READY_FOR_RETURN) returned++;
+    });
 
-            // Normalize
-            city = city.charAt(0).toUpperCase() + city.slice(1).toLowerCase();
-            if (city.length > 15) city = city.substring(0, 15) + '...';
+    // Visualization uses a Chart? Or just text? 
+    // HTML has a canvas `successRateChart`.
+    // Let's make a Doughnut/Pie.
 
-            cityMap[city] = (cityMap[city] || 0) + 1;
-        });
+    const successRate = Math.round((delivered / total) * 100);
+    this.setSafeText('successRateValue', successRate + '%');
+    this.setSafeText('successDeliveredCount', delivered);
+    this.setSafeText('successReturnedCount', returned);
 
-        const sorted = Object.entries(cityMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const ctx = document.getElementById('successRateChart').getContext('2d');
+    if (this.successChart) this.successChart.destroy();
 
-        const container = document.getElementById('topCitiesParam');
-        if (container) {
-            container.innerHTML = '';
-            sorted.forEach(([city, count]) => {
-                const pct = Math.min(100, (count / orders.length) * 100 * 2);
-                container.innerHTML += `
+    this.successChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Delivered', 'Returned', 'Other'],
+            datasets: [{
+                data: [delivered, returned, total - delivered - returned],
+                backgroundColor: ['#10b981', '#ef4444', '#f1f5f9'],
+                borderWidth: 0,
+                cutout: '80%'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { enabled: false } }
+        }
+    });
+},
+
+renderTopCities: function (orders) {
+    // Helper to extract city from address
+    const extractCity = (addr) => {
+        if (!addr) return "Unknown";
+        const cleanAddr = addr.toString().trim();
+        if (cleanAddr.includes(',')) {
+            return cleanAddr.split(',').pop().trim();
+        }
+        // Heuristic: If address is short, might be just city?
+        // If long, take last word?
+        // User examples: "Block E Johar Town Lahore" -> "Lahore" (Last word)
+        const parts = cleanAddr.split(/\s+/);
+        if (parts.length > 1) {
+            const last = parts[parts.length - 1];
+            // Filter out common non-city last words if needed (e.g. "Town", "Road")
+            // For now, simpler is better.
+            return last;
+        }
+        return cleanAddr;
+    };
+
+    const cityMap = {};
+    orders.forEach(o => {
+        let city = "Unknown";
+        if (o.city) {
+            city = o.city;
+        } else if (o.address) {
+            city = extractCity(o.address);
+        }
+
+        // Normalize
+        city = city.charAt(0).toUpperCase() + city.slice(1).toLowerCase();
+        if (city.length > 15) city = city.substring(0, 15) + '...';
+
+        cityMap[city] = (cityMap[city] || 0) + 1;
+    });
+
+    const sorted = Object.entries(cityMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+    const container = document.getElementById('topCitiesParam');
+    if (container) {
+        container.innerHTML = '';
+        sorted.forEach(([city, count]) => {
+            const pct = Math.min(100, (count / orders.length) * 100 * 2);
+            container.innerHTML += `
                     <div class="city-item">
                         <span class="fw-bold text-secondary small" title="${city}" style="width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${city}</span>
                         <span class="fw-bold text-primary small">${count}</span>
@@ -483,20 +524,20 @@ const Dashboard = {
                         </div>
                     </div>
                 `;
-            });
-        }
-    },
+        });
+    }
+},
 
-    renderRecentActivity: function (orders) {
-        // Sort by ID desc (newest first)
-        const sorted = [...orders].sort((a, b) => b.id - a.id).slice(0, 5);
+renderRecentActivity: function (orders) {
+    // Sort by ID desc (newest first)
+    const sorted = [...orders].sort((a, b) => b.id - a.id).slice(0, 5);
 
-        const container = document.getElementById('recentActivityParam');
-        if (container) {
-            container.innerHTML = '';
-            sorted.forEach(o => {
-                const name = o.customer || o.customerName || 'Unknown Customer';
-                container.innerHTML += `
+    const container = document.getElementById('recentActivityParam');
+    if (container) {
+        container.innerHTML = '';
+        sorted.forEach(o => {
+            const name = o.customer || o.customerName || 'Unknown Customer';
+            container.innerHTML += `
                     <div class="activity-item d-flex align-items-center justify-content-between">
                         <div>
                             <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.9rem;">${name}</h6>
@@ -505,7 +546,7 @@ const Dashboard = {
                         <span class="badge bg-light text-secondary border">${o.date}</span>
                     </div>
                 `;
-            });
-        }
+        });
     }
+}
 };
