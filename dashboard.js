@@ -179,20 +179,20 @@ const Dashboard = {
         this.setSafeText('kpi-pending-amount', pendingAmount.toLocaleString());
         this.setSafeText('kpi-returned-amount', returnedAmount.toLocaleString());
 
-        // Expense & Profit
-        const totalExpenses = Expenses.getTotal(this.filterStart, this.filterEnd);
-        const netProfit = deliveredAmount - totalExpenses;
+        // 5. Net Profit
+        const expenses = Expenses.getTotal(this.filterStart, this.filterEnd);
+        const netProfit = deliveredAmount - expenses;
 
-        this.setSafeText('kpi-expenses', totalExpenses.toLocaleString());
-        this.setSafeText('kpi-profit', netProfit.toLocaleString());
+        this.setSafeText('kpi-expenses', this.formatCurrency(expenses));
+        this.setSafeText('kpi-profit', this.formatCurrency(netProfit));
 
         // Color Logic for Profit
-        const profitContainer = document.getElementById('kpi-profit-container');
-        if (profitContainer) {
+        const profitEl = document.getElementById('kpi-profit');
+        if (profitEl) {
             if (netProfit >= 0) {
-                profitContainer.className = "stat-value text-success";
+                profitEl.className = "stat-value text-success";
             } else {
-                profitContainer.className = "stat-value text-danger";
+                profitEl.className = "stat-value text-danger";
             }
         }
     },
@@ -200,6 +200,10 @@ const Dashboard = {
     setSafeText: function (id, val) {
         const el = document.getElementById(id);
         if (el) el.innerText = val;
+    },
+
+    formatCurrency: function (num) {
+        return "Rs. " + (num || 0).toLocaleString();
     },
 
     renderCharts: function (orders) {

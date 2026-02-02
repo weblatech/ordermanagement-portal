@@ -124,7 +124,7 @@
             <div class="brand" id="sidebarBrand">
                 <i class="fas fa-box-open"></i> OMS Live v2
             </div>
-            <div class="nav flex-column">
+            <div class="nav flex-column flex-grow-1">
                 <a href="#" class="nav-link active" data-target="dashboard">
                     <i class="fas fa-home"></i> Dashboard
                 </a>
@@ -166,172 +166,193 @@
             <section id="dashboard" class="content-section">
                 <h2 class="mb-4">Dashboard Overview</h2>
 
-                <!-- Date Filter Section -->
-                <div class="filter-bar d-flex flex-wrap align-items-center justify-content-between p-3 mb-4 rounded shadow-sm text-white"
-                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <div class="d-flex align-items-center mb-2 mb-md-0">
-                        <i class="fas fa-calendar-alt me-2 fa-lg"></i>
-                        <h5 class="mb-0 fw-bold">Filter by Date</h5>
-                    </div>
-                    <div class="d-flex flex-wrap align-items-center gap-2">
-                        <div class="btn-group me-3" role="group">
-                            <button type="button" class="btn btn-sm text-white"
-                                style="background: rgba(255,255,255,0.2); border:none;"
-                                onclick="Dashboard.setDateRange('today')">Today</button>
-                            <button type="button" class="btn btn-sm text-white"
-                                style="background: rgba(255,255,255,0.2); border:none;"
-                                onclick="Dashboard.setDateRange('yesterday')">Yesterday</button>
-                            <button type="button" class="btn btn-sm text-white"
-                                style="background: rgba(255,255,255,0.2); border:none;"
-                                onclick="Dashboard.setDateRange('week')">This Week</button>
-                            <button type="button" class="btn btn-sm text-white"
-                                style="background: rgba(255,255,255,0.2); border:none;"
-                                onclick="Dashboard.setDateRange('month')">This Month</button>
-                            <button type="button" class="btn btn-sm btn-light fw-bold text-primary"
-                                onclick="Dashboard.setDateRange('all')">All Time</button>
+                <!-- Filter Bar -->
+                <div class="card border-0 shadow-sm mb-4 text-white filter-bar">
+                    <div class="card-body p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-calendar-alt fa-lg me-3 opacity-75"></i>
+                            <h5 class="mb-0 fw-bold">Filter by Date</h5>
                         </div>
-                        <div class="d-flex align-items-center bg-white bg-opacity-25 p-1 rounded">
-                            <span class="small me-2 fw-bold" style="min-width: 40px;">From:</span>
-                            <input type="date" class="form-control form-control-sm border-0 filter-input"
-                                id="filter-start-date">
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <div class="btn-group me-3" role="group">
+                                <button type="button" class="btn btn-sm text-white"
+                                    style="background: rgba(255,255,255,0.2); border:none;"
+                                    onclick="Dashboard.setDateRange('today')">Today</button>
+                                <button type="button" class="btn btn-sm text-white"
+                                    style="background: rgba(255,255,255,0.2); border:none;"
+                                    onclick="Dashboard.setDateRange('yesterday')">Yesterday</button>
+                                <button type="button" class="btn btn-sm text-white"
+                                    style="background: rgba(255,255,255,0.2); border:none;"
+                                    onclick="Dashboard.setDateRange('week')">This Week</button>
+                                <button type="button" class="btn btn-sm text-white"
+                                    style="background: rgba(255,255,255,0.2); border:none;"
+                                    onclick="Dashboard.setDateRange('month')">This Month</button>
+                                <button type="button" class="btn btn-sm btn-light fw-bold text-primary"
+                                    onclick="Dashboard.setDateRange('all')">All Time</button>
+                            </div>
+                            <div class="d-flex align-items-center bg-white bg-opacity-25 p-1 rounded">
+                                <span class="small me-2 fw-bold" style="min-width: 40px;">From:</span>
+                                <input type="date" class="form-control form-control-sm border-0 filter-input"
+                                    id="filter-start-date">
+                            </div>
+                            <div class="d-flex align-items-center bg-white bg-opacity-25 p-1 rounded ms-2">
+                                <span class="small me-2 fw-bold" style="min-width: 25px;">To:</span>
+                                <input type="date" class="form-control form-control-sm border-0 filter-input"
+                                    id="filter-end-date">
+                            </div>
+                            <button class="btn btn-light text-primary fw-bold ms-3 shadow-sm"
+                                onclick="Dashboard.applyDateFilter()">
+                                <i class="fas fa-check me-1"></i> Apply Filter
+                            </button>
                         </div>
-                        <div class="d-flex align-items-center bg-white bg-opacity-25 p-1 rounded ms-2">
-                            <span class="small me-2 fw-bold" style="min-width: 25px;">To:</span>
-                            <input type="date" class="form-control form-control-sm border-0 filter-input"
-                                id="filter-end-date">
-                        </div>
-                        <button class="btn btn-light text-primary fw-bold ms-3 shadow-sm"
-                            onclick="Dashboard.applyDateFilter()">
-                            <i class="fas fa-check me-1"></i> Apply Filter
-                        </button>
                     </div>
                 </div>
 
-                <!-- Row 1: Order Counts -->
+                <!-- Row 1: KPI Counts (Small) -->
                 <div class="row g-4 mb-4">
-                    <div class="col-md-3">
-                        <div class="stat-card bg-white p-3 rounded shadow-sm">
-                            <div class="d-flex align-items-center">
-                                <div class="stat-icon bg-primary bg-opacity-10 text-primary rounded p-3 me-3">
-                                    <i class="fas fa-calendar-day fa-lg"></i>
-                                </div>
-                                <div>
-                                    <h3 class="stat-value fw-bold text-dark mb-0" id="kpi-today">0</h3>
-                                    <p class="stat-label text-muted mb-0">Today's Orders</p>
-                                </div>
+                    <div class="col-xl-3 col-md-6 col-12">
+                        <div class="card-kpi-small shadow-sm">
+                            <div class="icon-box-sm bg-primary bg-opacity-10 text-primary">
+                                <i class="fas fa-calendar-day"></i>
+                            </div>
+                            <div>
+                                <h3 class="stat-value mb-0" id="kpi-today">0</h3>
+                                <p class="stat-label mb-0">Today's Orders</p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="stat-card bg-white p-3 rounded shadow-sm">
-                            <div class="d-flex align-items-center">
-                                <div class="stat-icon bg-warning bg-opacity-10 text-warning rounded p-3 me-3">
-                                    <i class="fas fa-clock fa-lg"></i>
-                                </div>
-                                <div>
-                                    <h3 class="stat-value fw-bold text-dark mb-0" id="kpi-pending">0</h3>
-                                    <p class="stat-label text-muted mb-0">Pending Orders</p>
-                                </div>
+                    <div class="col-xl-3 col-md-6 col-12">
+                        <div class="card-kpi-small shadow-sm">
+                            <div class="icon-box-sm bg-success bg-opacity-10 text-success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div>
+                                <h3 class="stat-value mb-0" id="kpi-delivered">0</h3>
+                                <p class="stat-label mb-0">Delivered Orders</p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="stat-card bg-white p-3 rounded shadow-sm">
-                            <div class="d-flex align-items-center">
-                                <div class="stat-icon bg-success bg-opacity-10 text-success rounded p-3 me-3">
-                                    <i class="fas fa-check-circle fa-lg"></i>
-                                </div>
-                                <div>
-                                    <h3 class="stat-value fw-bold text-dark mb-0" id="kpi-delivered">0</h3>
-                                    <p class="stat-label text-muted mb-0">Delivered Orders</p>
-                                </div>
+                    <div class="col-xl-3 col-md-6 col-12">
+                        <div class="card-kpi-small shadow-sm">
+                            <div class="icon-box-sm bg-warning bg-opacity-10 text-warning">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <h3 class="stat-value mb-0" id="kpi-pending">0</h3>
+                                <p class="stat-label mb-0">Pending Orders</p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="stat-card bg-white p-3 rounded shadow-sm">
-                            <div class="d-flex align-items-center">
-                                <div class="stat-icon bg-danger bg-opacity-10 text-danger rounded p-3 me-3">
-                                    <i class="fas fa-undo fa-lg"></i>
-                                </div>
-                                <div>
-                                    <h3 class="stat-value fw-bold text-dark mb-0" id="kpi-returned">0</h3>
-                                    <p class="stat-label text-muted mb-0">Returned Orders</p>
-                                </div>
+                    <div class="col-xl-3 col-md-6 col-12">
+                        <div class="card-kpi-small shadow-sm">
+                            <div class="icon-box-sm bg-danger bg-opacity-10 text-danger">
+                                <i class="fas fa-undo"></i>
+                            </div>
+                            <div>
+                                <h3 class="stat-value mb-0" id="kpi-returned">0</h3>
+                                <p class="stat-label mb-0">Returned Orders</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Row 2: Financial Amounts (Bordered) -->
+                <!-- Row 2: Financials (Large Cards) -->
                 <div class="row g-4 mb-4">
-                    <div class="col-md-3">
-                        <div class="stat-card bg-white p-3 rounded shadow-sm border-start border-4 border-info">
-                            <p class="stat-label text-muted mb-1">Total COD Amount</p>
-                            <h3 class="stat-value fw-bold text-info mb-0" id="kpi-cod-amount">Rs. 0</h3>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="card-kpi-large shadow-sm border-top-primary">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="icon-box-sm bg-primary bg-opacity-10 text-primary mb-3">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <span class="trend-badge bg-soft-success">
+                                    <i class="fas fa-arrow-up"></i> 0%
+                                </span>
+                            </div>
+                            <h3 class="stat-value" id="kpi-cod-amount">Rs. 0</h3>
+                            <p class="stat-label">Total COD Amount</p>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="stat-card bg-white p-3 rounded shadow-sm border-start border-4 border-success">
-                            <p class="stat-label text-muted mb-1">Delivered Amount</p>
-                            <h3 class="stat-value fw-bold text-success mb-0" id="kpi-delivered-amount">Rs. 0</h3>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="card-kpi-large shadow-sm border-top-success">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="icon-box-sm bg-success bg-opacity-10 text-success mb-3">
+                                    <i class="fas fa-hand-holding-usd"></i>
+                                </div>
+                                <span class="trend-badge bg-soft-success">
+                                    <i class="fas fa-arrow-up"></i> 0%
+                                </span>
+                            </div>
+                            <h3 class="stat-value" id="kpi-delivered-amount">Rs. 0</h3>
+                            <p class="stat-label">Delivered Amount</p>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="stat-card bg-white p-3 rounded shadow-sm border-start border-4 border-warning">
-                            <p class="stat-label text-muted mb-1">Pending Amount</p>
-                            <h3 class="stat-value fw-bold text-warning mb-0" id="kpi-pending-amount">Rs. 0</h3>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card bg-white p-3 rounded shadow-sm border-start border-4 border-danger">
-                            <p class="stat-label text-muted mb-1">Returned Amount</p>
-                            <h3 class="stat-value fw-bold text-danger mb-0" id="kpi-returned-amount">Rs. 0</h3>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="card-kpi-large shadow-sm border-top-warning">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="icon-box-sm bg-warning bg-opacity-10 text-warning mb-3">
+                                    <i class="fas fa-hourglass-half"></i>
+                                </div>
+                            </div>
+                            <h3 class="stat-value" id="kpi-pending-amount">Rs. 0</h3>
+                            <p class="stat-label">Pending Amount</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Row 3: Expenses & Profit -->
+                <!-- Row 3: More Financials -->
                 <div class="row g-4 mb-4">
-                    <div class="col-md-6">
-                        <div class="stat-card bg-white p-4 rounded shadow-sm border border-danger border-opacity-25">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <p class="text-secondary mb-1">Total Expenses</p>
-                                    <h2 class="text-danger fw-bold mb-0">Rs. <span id="kpi-expenses">0</span></h2>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="card-kpi-large shadow-sm border-top-danger">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="icon-box-sm bg-danger bg-opacity-10 text-danger mb-3">
+                                    <i class="fas fa-exclamation-circle"></i>
                                 </div>
-                                <i class="fas fa-wallet fa-3x text-danger opacity-25"></i>
                             </div>
+                            <h3 class="stat-value" id="kpi-returned-amount">Rs. 0</h3>
+                            <p class="stat-label">Returned Amount</p>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="stat-card bg-white p-4 rounded shadow-sm border border-success border-opacity-25">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <p class="text-secondary mb-1">Net Profit / Loss</p>
-                                    <h2 class="text-success fw-bold mb-0" id="kpi-profit-container">
-                                        Rs. <span id="kpi-profit">0</span>
-                                    </h2>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="card-kpi-large shadow-sm border-top-info">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="icon-box-sm bg-info bg-opacity-10 text-info mb-3">
+                                    <i class="fas fa-chart-line"></i>
                                 </div>
-                                <i class="fas fa-chart-line fa-3x text-success opacity-25"></i>
                             </div>
+                            <h3 class="stat-value text-success" id="kpi-profit">Rs. 0</h3>
+                            <p class="stat-label">Net Profit / Loss (After Expenses: <span id="kpi-expenses">0</span>)
+                            </p>
+                            <!-- Hidden container for old logic if needed, but we use kpi-profit directly now -->
+                            <span id="kpi-profit-container" class="d-none"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="card-kpi-large shadow-sm border-top-purple">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="icon-box-sm bg-primary bg-opacity-10 text-primary mb-3"
+                                    style="background-color: #ede9fe; color: #8b5cf6;">
+                                    <i class="fas fa-percent"></i>
+                                </div>
+                            </div>
+                            <h3 class="stat-value text-danger">-95%</h3>
+                            <p class="stat-label">Growth Rate <small>(vs previous period)</small></p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Row 4: Charts -->
                 <div class="row g-4">
-                    <div class="col-md-8">
-                        <div class="card h-100 border-0 shadow-sm p-3">
-                            <h5 class="card-title mb-3">Orders by Status</h5>
+                    <div class="col-lg-8 col-12">
+                        <div class="card h-100 border-0 shadow-sm p-3" style="border-radius: 1rem;">
+                            <h5 class="card-title mb-3 fw-bold text-secondary">Orders by Status</h5>
                             <div style="height: 300px; display: flex; justify-content: center;">
                                 <canvas id="statusChart"></canvas>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card h-100 border-0 shadow-sm p-3">
-                            <h5 class="card-title mb-3">Courier Performance</h5>
+                    <div class="col-lg-4 col-12">
+                        <div class="card h-100 border-0 shadow-sm p-3" style="border-radius: 1rem;">
+                            <h5 class="card-title mb-3 fw-bold text-secondary">Courier Performance</h5>
                             <div style="height: 300px;">
                                 <canvas id="courierChart"></canvas>
                             </div>
