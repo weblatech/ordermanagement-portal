@@ -164,7 +164,8 @@ const App = {
 
                     customer: val(['Customer', 'customer', 'Name', 'name', 'Customer Name', 'customer name']),
 
-                    mobile: val(['Mobile', 'mobile', 'Phone', 'phone', 'Phone Number', 'phone number', 'Cell', 'cell']),
+                    // Added mostly used keys: 'mobile no', 'contact', 'contact no'
+                    mobile: val(['Mobile', 'mobile', 'Mobile No', 'mobile no', 'Mobile No.', 'Phone', 'phone', 'Phone Number', 'phone number', 'Cell', 'cell', 'Contact', 'contact']),
 
                     address: val(['Address', 'address', 'Shipping Address', 'shipping address']),
 
