@@ -431,46 +431,60 @@ const Dashboard = {
     },
 
     renderTopCities: function (orders) {
-        // Assume address contains city or we normalize? 
-        // Use 'city' field if available? The payload had address.
-        // Let's try to extract city or just group by Full Address if uncertain.
-        // Wait, looking at `js/orders.js` or data structure...
-        // Data has `address`. Often users put "City" in address. 
-        // Real extraction is hard. Let's group by `courier` for fallback? 
-        // User requested "Top 5 Cities".
-        // Let's assume there is a `city` field or I check if I can extract it.
-        // Checking `orders.js` or `app.js` payload map.
-        // Payload has 'address'.
-        // I will implement a dummy "Shim" that groups by Address first 2 words for now, 
-        // OR better, since I can't guarantee city, maybe I'll skip this or use Courier locations if available.
-        // Actually, let's just use "Address" string as key for now.
+        // Helper to extract city from address
+        const extractCity = (addr) => {
+            if (!addr) return "Unknown";
+            const cleanAddr = addr.toString().trim();
+            if (cleanAddr.includes(',')) {
+                return cleanAddr.split(',').pop().trim();
+            }
+            // Heuristic: If address is short, might be just city?
+            // If long, take last word?
+            // User examples: "Block E Johar Town Lahore" -> "Lahore" (Last word)
+            const parts = cleanAddr.split(/\s+/);
+            if (parts.length > 1) {
+                const last = parts[parts.length - 1];
+                // Filter out common non-city last words if needed (e.g. "Town", "Road")
+                // For now, simpler is better.
+                return last;
+            }
+            return cleanAddr;
+        };
 
         const cityMap = {};
         orders.forEach(o => {
-            // Very naive city extraction: First word of address?
-            // Or just use the whole address line
-            const city = o.city || o.address.split(',').pop().trim() || "Unknown";
-            // Attempt to take last part of comma separated?
+            let city = "Unknown";
+            if (o.city) {
+                city = o.city;
+            } else if (o.address) {
+                city = extractCity(o.address);
+            }
+
+            // Normalize
+            city = city.charAt(0).toUpperCase() + city.slice(1).toLowerCase();
+            if (city.length > 15) city = city.substring(0, 15) + '...';
+
             cityMap[city] = (cityMap[city] || 0) + 1;
         });
 
         const sorted = Object.entries(cityMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
 
         const container = document.getElementById('topCitiesParam');
-        container.innerHTML = '';
-
-        sorted.forEach(([city, count]) => {
-            const pct = Math.min(100, (count / orders.length) * 100 * 2); // Scale up for visual?
-            container.innerHTML += `
-                <div class="city-item">
-                    <span class="fw-bold text-secondary small" style="width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${city}</span>
-                    <span class="fw-bold text-primary small">${count}</span>
-                    <div class="city-progress">
-                        <div class="city-progress-bar" style="width: ${pct}%"></div>
+        if (container) {
+            container.innerHTML = '';
+            sorted.forEach(([city, count]) => {
+                const pct = Math.min(100, (count / orders.length) * 100 * 2);
+                container.innerHTML += `
+                    <div class="city-item">
+                        <span class="fw-bold text-secondary small" title="${city}" style="width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${city}</span>
+                        <span class="fw-bold text-primary small">${count}</span>
+                        <div class="city-progress">
+                            <div class="city-progress-bar" style="width: ${pct}%"></div>
+                        </div>
                     </div>
-                </div>
-            `;
-        });
+                `;
+            });
+        }
     },
 
     renderRecentActivity: function (orders) {
@@ -478,18 +492,20 @@ const Dashboard = {
         const sorted = [...orders].sort((a, b) => b.id - a.id).slice(0, 5);
 
         const container = document.getElementById('recentActivityParam');
-        container.innerHTML = '';
-
-        sorted.forEach(o => {
-            container.innerHTML += `
-                <div class="activity-item d-flex align-items-center justify-content-between">
-                    <div>
-                        <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.9rem;">${o.customer || 'Customer'}</h6>
-                        <small class="text-muted d-block">${o.product} - ${this.formatCurrency(o.price)}</small>
+        if (container) {
+            container.innerHTML = '';
+            sorted.forEach(o => {
+                const name = o.customer || o.customerName || 'Unknown Customer';
+                container.innerHTML += `
+                    <div class="activity-item d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.9rem;">${name}</h6>
+                            <small class="text-muted d-block">${o.product} - ${this.formatCurrency(o.price)}</small>
+                        </div>
+                        <span class="badge bg-light text-secondary border">${o.date}</span>
                     </div>
-                    <span class="badge bg-light text-secondary border">${o.date}</span>
-                </div>
-            `;
-        });
+                `;
+            });
+        }
     }
 };
