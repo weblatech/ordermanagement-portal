@@ -50,6 +50,8 @@ body.dark-mode {
     color: white;
     font-size: 1.25rem;
     letter-spacing: 0.5px;
+    line-height: 1.4;
+    padding-bottom: 1rem;
 }
 
 .nav-link {

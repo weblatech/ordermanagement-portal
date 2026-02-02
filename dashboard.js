@@ -174,10 +174,10 @@ const Dashboard = {
         const totalReturned = countReturn + countReadyReturn;
         this.setSafeText('kpi-returned', totalReturned);
 
-        this.setSafeText('kpi-cod-amount', codAmount.toLocaleString());
-        this.setSafeText('kpi-delivered-amount', deliveredAmount.toLocaleString());
-        this.setSafeText('kpi-pending-amount', pendingAmount.toLocaleString());
-        this.setSafeText('kpi-returned-amount', returnedAmount.toLocaleString());
+        this.setSafeText('kpi-cod-amount', this.formatCurrency(codAmount));
+        this.setSafeText('kpi-delivered-amount', this.formatCurrency(deliveredAmount));
+        this.setSafeText('kpi-pending-amount', this.formatCurrency(pendingAmount));
+        this.setSafeText('kpi-returned-amount', this.formatCurrency(returnedAmount));
 
         // 5. Net Profit
         const expenses = Expenses.getTotal(this.filterStart, this.filterEnd);
