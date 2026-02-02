@@ -140,6 +140,11 @@ const App = {
 
             console.log("Raw API Data:", rawData); // DEBUG LOG
 
+            // TEMPORARY DIAGNOSTIC: Show headers to user
+            if (rawData.length > 0) {
+                alert("COLUMN NAMES FOUND:\n" + Object.keys(rawData[0]).join(", "));
+            }
+
             // Process Data with Robust Key Matching
             const orders = rawData.map((rawItem, index) => {
                 // 1. Create a "Clean" item where all keys are lowercase & trimmed
