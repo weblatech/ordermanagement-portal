@@ -272,6 +272,23 @@ body.dark-mode .reseller-item {
     /* Explicit Light Text */
 }
 
+/* Filter Input Styles */
+.filter-input {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #1f2937;
+    cursor: pointer;
+}
+
+body.dark-mode .filter-input {
+    background-color: #374151;
+    color: #f9fafb;
+    border: 1px solid #4b5563;
+}
+
+body.dark-mode .filter-input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
 /* Print Styles */
 @media print {
     @page {

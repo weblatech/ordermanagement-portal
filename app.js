@@ -140,10 +140,10 @@ const App = {
 
             console.log("Raw API Data:", rawData); // DEBUG LOG
 
-            // TEMPORARY DIAGNOSTIC: Show headers to user
-            if (rawData.length > 0) {
-                alert("COLUMN NAMES FOUND:\n" + Object.keys(rawData[0]).join(", "));
-            }
+            // TEMPORARY DIAGNOSTIC: Removed
+            // if (rawData.length > 0) {
+            //     alert("COLUMN NAMES FOUND:\n" + Object.keys(rawData[0]).join(", "));
+            // }
 
             // Process Data with Robust Key Matching
             const orders = rawData.map((rawItem, index) => {
@@ -363,8 +363,9 @@ const App = {
                     date: new Date().toLocaleDateString('en-GB'),
                     reseller: formData.get('resellerName'),
                     customer: formData.get('customerName'),
-                    mobile: phones.join(', '),
-                    address: formData.get('address'),
+                    // Swapped Address and Mobile to match Backend Column mismatch
+                    mobile: formData.get('address'),
+                    address: phones.join(', '),
                     product: formData.get('productName'),
                     qty: formData.get('quantity'),
                     price: formData.get('amount'),
