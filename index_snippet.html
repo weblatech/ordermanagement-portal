@@ -1,0 +1,27 @@
+<body>
+    <!-- Login Section -->
+    <section id="login-section" class="d-flex align-items-center justify-content-center vh-100 bg-light">
+        <div class="card border-0 shadow-lg p-4" style="width: 100%; max-width: 400px;">
+            <div class="text-center mb-4">
+                <h2 class="text-primary fw-bold"><i class="fas fa-box-open"></i> OMS</h2>
+                <p class="text-muted">Admin Login</p>
+            </div>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" id="loginUser" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" id="loginPass" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+                <div id="loginError" class="text-danger mt-3 small text-center d-none">Invalid Credentials</div>
+            </form>
+        </div>
+    </section>
+
+    <!-- App Container (Hidden by default) -->
+    <div id="app-container" class="d-none">
+        <!-- Sidebar -->
+        <nav class="sidebar">

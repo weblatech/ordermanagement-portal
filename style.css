@@ -1,0 +1,322 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #4f46e5;
+    /* Indigo 600 - Premium & Versatile */
+    --secondary-color: #475569;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --info-color: #3b82f6;
+    --light-bg: #f3f4f6;
+    --card-bg: #ffffff;
+    --sidebar-width: 260px;
+    --header-height: 64px;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --border-radius: 0.75rem;
+    --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+body.dark-mode {
+    --light-bg: #111827;
+    --card-bg: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    --primary-color: #818cf8;
+    /* Indigo 400 - Lighter for Dark Mode */
+}
+
+body.dark-mode .sidebar {
+    background-color: #0f172a;
+    /* Slate 900 - Darker, richer */
+    border-right: 1px solid #1e293b;
+}
+
+body.dark-mode .nav-link {
+    color: #94a3b8;
+    /* Slate 400 */
+}
+
+body.dark-mode .nav-link:hover {
+    background-color: #1e293b;
+    /* Slate 800 */
+    color: #e2e8f0;
+}
+
+body.dark-mode .nav-link.active {
+    background-color: var(--primary-color);
+    color: white;
+    /* Keep white on primary brand color */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .table-container,
+body.dark-mode .stat-card,
+body.dark-mode .card {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border-color: #374151;
+}
+
+body.dark-mode .table {
+    color: var(--text-primary);
+    --bs-table-color: var(--text-primary);
+    --bs-table-bg: var(--card-bg);
+    --bs-table-hover-bg: #374151;
+}
+
+body.dark-mode .table th {
+    background-color: #374151;
+    color: var(--text-primary);
+}
+
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: white;
+}
+
+body.dark-mode .form-control:focus {
+    background-color: #374151;
+    color: white;
+}
+
+body.dark-mode .text-muted {
+    color: #9ca3af !important;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--light-bg);
+    color: var(--text-primary);
+    overflow-x: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-color: white;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    background-color: #f3f4f6;
+    color: var(--primary-color);
+}
+
+.nav-link.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+    /* Indigo Shadow */
+}
+
+.nav-link i {
+    width: 24px;
+    margin-right: 12px;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+/* Cards */
+.stat-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--box-shadow);
+    transition: transform 0.2s;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    height: 100%;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.stat-value {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0.5rem 0 0.25rem 0;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Tables */
+.table-container {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    box-shadow: var(--box-shadow);
+    overflow-x: auto;
+}
+
+.table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    background-color: #f9fafb;
+}
+
+.table td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+/* Forms */
+.form-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--secondary-color);
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 0.5rem;
+}
+
+/* Badges */
+.badge-soft-warning {
+    background-color: #fffbeb;
+    color: #b45309;
+}
+
+.badge-soft-success {
+    background-color: #ecfdf5;
+    color: #047857;
+}
+
+.badge-soft-primary {
+    background-color: #eff6ff;
+    color: #1e40af;
+}
+
+.badge-soft-danger {
+    background-color: #fef2f2;
+    color: #b91c1c;
+}
+
+/* Booking Form - Multi Input */
+.input-group-phone .btn-remove {
+    z-index: 0;
+}
+
+/* Reseller List Item */
+.reseller-item {
+    background-color: #f8f9fa;
+}
+
+body.dark-mode .reseller-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    /* Slight tint */
+    border-color: #4b5563 !important;
+    color: #e5e7eb !important;
+    /* Explicit Light Text */
+}
+
+/* Print Styles */
+@media print {
+    @page {
+        size: A4 landscape;
+        margin: 0.5cm;
+    }
+
+    body {
+        background-color: white;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .sidebar,
+    .navbar,
+    .no-print {
+        display: none !important;
+    }
+
+    .main-content {
+        margin: 0;
+        padding: 0;
+    }
+
+    #print-area {
+        display: block !important;
+        width: 100%;
+    }
+
+    .invoice-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        height: 190mm;
+        /* Approx A4 Landscape printable height */
+        gap: 10mm;
+    }
+
+    .invoice-slip {
+        border: 1px dashed #ccc;
+        padding: 15px;
+        page-break-inside: avoid;
+        font-size: 12px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+}
