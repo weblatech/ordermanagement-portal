@@ -249,17 +249,14 @@ const App = {
         Dashboard.render(); // Re-calc KPIs
 
         try {
-            // Use API helper to include spreadsheetId automatically
-            await API.request('updateStatus', {
-                rowIndex: order.rowIndex,
-                status: newStatus,
-                customer: order.customer, // Backup key
-                mobile: order.mobile      // Backup key 
-            });
-            console.log("Status update sent to API");
+            // Use API helper 
+            await API.updateStatus(id, newStatus);
+            console.log("Status update sent to API for Order #" + id);
         } catch (e) {
-            console.error("Failed to sync status update", e);
-            alert("Status changed locally but failed to save to Sheet via API. Check console.");
+            console.error("Failed to update status:", e);
+            alert("Failed to save status to Google Sheet. Check internet.");
+            // Revert on failure? 
+            // For now, keep it optimistic to avoid UI jumping.
         }
     },
 

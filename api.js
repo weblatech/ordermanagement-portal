@@ -61,5 +61,9 @@ const API = {
         } else {
             return [];
         }
+    },
+
+    updateStatus: async function (orderId, newStatus) {
+        return await this.request('updateStatus', { orderId, newStatus });
     }
 };
