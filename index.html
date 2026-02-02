@@ -166,107 +166,133 @@
             <section id="dashboard" class="content-section">
                 <h2 class="mb-4">Dashboard Overview</h2>
 
-                <!-- KPI Cards -->
+                <!-- Row 1: Order Counts -->
                 <div class="row g-4 mb-4">
                     <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon bg-soft-primary text-primary">
-                                <i class="fas fa-calendar-day"></i>
-                            </div>
-                            <h3 class="stat-value" id="kpi-today">0</h3>
-                            <p class="stat-label">Today's Orders</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon badge-soft-warning">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <h3 class="stat-value" id="kpi-pending">0</h3>
-                            <p class="stat-label">Pending Orders</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon badge-soft-success">
-                                <i class="fas fa-truck"></i>
-                            </div>
-                            <h3 class="stat-value" id="kpi-delivered">0</h3>
-                            <p class="stat-label">Delivered</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon badge-soft-danger">
-                                <i class="fas fa-undo"></i>
-                            </div>
-                            <h3 class="stat-value" id="kpi-returned">0</h3>
-                            <p class="stat-label">Returned</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Row 2: Finance Cards -->
-                <div class="row g-4 mb-4">
-                    <div class="col-md-4">
-                        <div class="stat-card">
-                            <div class="stat-icon badge-soft-info">
-                                <i class="fas fa-money-bill-wave"></i>
-                            </div>
-                            <h3 class="stat-value" id="kpi-cod">Rs. 0</h3>
-                            <p class="stat-label">Total COD Amount</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="stat-card">
-                            <div class="stat-icon badge-soft-danger">
-                                <i class="fas fa-wallet"></i>
-                            </div>
-                            <h3 class="stat-value" id="kpi-expenses">Rs. 0</h3>
-                            <p class="stat-label">Total Expenses</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="stat-card">
-                            <div class="stat-icon badge-soft-success">
-                                <i class="fas fa-chart-pie"></i>
-                            </div>
-                            <h3 class="stat-value" id="kpi-profit">Rs. 0</h3>
-                            <p class="stat-label">Net Profit</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Returned Amount Card -->
-                <div class="row g-4 mb-4">
-                    <div class="col-md-12">
-                        <div class="stat-card">
+                        <div class="stat-card bg-white p-3 rounded shadow-sm">
                             <div class="d-flex align-items-center">
-                                <div class="stat-icon badge-soft-danger me-3">
-                                    <i class="fas fa-undo-alt"></i>
+                                <div class="stat-icon bg-primary bg-opacity-10 text-primary rounded p-3 me-3">
+                                    <i class="fas fa-calendar-day fa-lg"></i>
                                 </div>
                                 <div>
-                                    <h3 class="stat-value" id="kpi-return-amount">Rs. 0</h3>
-                                    <p class="stat-label mb-0">Total Returned Amount (Loss)</p>
+                                    <h3 class="stat-value fw-bold mb-0" id="kpi-today">0</h3>
+                                    <p class="stat-label text-muted mb-0">Today's Orders</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card bg-white p-3 rounded shadow-sm">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon bg-warning bg-opacity-10 text-warning rounded p-3 me-3">
+                                    <i class="fas fa-clock fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="stat-value fw-bold mb-0" id="kpi-pending">0</h3>
+                                    <p class="stat-label text-muted mb-0">Pending Orders</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card bg-white p-3 rounded shadow-sm">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon bg-success bg-opacity-10 text-success rounded p-3 me-3">
+                                    <i class="fas fa-check-circle fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="stat-value fw-bold mb-0" id="kpi-delivered">0</h3>
+                                    <p class="stat-label text-muted mb-0">Delivered Orders</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card bg-white p-3 rounded shadow-sm">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon bg-danger bg-opacity-10 text-danger rounded p-3 me-3">
+                                    <i class="fas fa-undo fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="stat-value fw-bold mb-0" id="kpi-returned">0</h3>
+                                    <p class="stat-label text-muted mb-0">Returned Orders</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Chart Section -->
+                <!-- Row 2: Financial Amounts (Bordered) -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card bg-white p-3 rounded shadow-sm border-start border-4 border-info">
+                            <p class="stat-label text-muted mb-1">Total COD Amount</p>
+                            <h3 class="stat-value fw-bold text-info mb-0" id="kpi-cod-amount">Rs. 0</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card bg-white p-3 rounded shadow-sm border-start border-4 border-success">
+                            <p class="stat-label text-muted mb-1">Delivered Amount</p>
+                            <h3 class="stat-value fw-bold text-success mb-0" id="kpi-delivered-amount">Rs. 0</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card bg-white p-3 rounded shadow-sm border-start border-4 border-warning">
+                            <p class="stat-label text-muted mb-1">Pending Amount</p>
+                            <h3 class="stat-value fw-bold text-warning mb-0" id="kpi-pending-amount">Rs. 0</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card bg-white p-3 rounded shadow-sm border-start border-4 border-danger">
+                            <p class="stat-label text-muted mb-1">Returned Amount</p>
+                            <h3 class="stat-value fw-bold text-danger mb-0" id="kpi-returned-amount">Rs. 0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Expenses & Profit -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="stat-card bg-white p-4 rounded shadow-sm border border-danger border-opacity-25">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-secondary mb-1">Total Expenses</p>
+                                    <h2 class="text-danger fw-bold mb-0">Rs. <span id="kpi-expenses">0</span></h2>
+                                </div>
+                                <i class="fas fa-wallet fa-3x text-danger opacity-25"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="stat-card bg-white p-4 rounded shadow-sm border border-success border-opacity-25">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-secondary mb-1">Net Profit / Loss</p>
+                                    <h2 class="text-success fw-bold mb-0" id="kpi-profit-container">
+                                        Rs. <span id="kpi-profit">0</span>
+                                    </h2>
+                                </div>
+                                <i class="fas fa-chart-line fa-3x text-success opacity-25"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 4: Charts -->
                 <div class="row g-4">
                     <div class="col-md-8">
-                        <div class="card border-0 shadow-sm p-3 h-100">
-                            <h5 class="card-title mb-3">Orders by Courier</h5>
-                            <canvas id="courierChart"></canvas>
+                        <div class="card h-100 border-0 shadow-sm p-3">
+                            <h5 class="card-title mb-3">Orders by Status</h5>
+                            <div style="height: 300px; display: flex; justify-content: center;">
+                                <canvas id="statusChart"></canvas>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card border-0 shadow-sm p-3 h-100">
-                            <h5 class="card-title mb-3">Order Status</h5>
-                            <div style="height: 250px; display: flex; justify-content: center;">
-                                <canvas id="statusChart"></canvas>
+                        <div class="card h-100 border-0 shadow-sm p-3">
+                            <h5 class="card-title mb-3">Courier Performance</h5>
+                            <div style="height: 300px;">
+                                <canvas id="courierChart"></canvas>
                             </div>
                         </div>
                     </div>
