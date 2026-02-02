@@ -359,165 +359,225 @@
             <!-- Orders Section -->
             <section id="orders" class="content-section d-none">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    </form>
-                </div>
-    </div>
-
-    <!-- Product List -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-body">
-            <div class="table-container p-0 shadow-none">
-                <table class="table table-hover" id="productsTable">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Product Name</th>
-                            <th>Size</th>
-                            <th>Price</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    </section>
-
-    <!-- Expenses Section -->
-    <section id="expenses" class="content-section d-none">
-        <h2 class="mb-4">Expense Management</h2>
-
-        <div class="row">
-            <!-- Add Form -->
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">Add Expense</h5>
-                        <form id="addExpenseForm">
-                            <div class="mb-3">
-                                <label class="form-label">Description</label>
-                                <input type="text" class="form-control" id="expenseDesc" required
-                                    placeholder="e.g. Packaging Material">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Amount (Rs.)</label>
-                                <input type="number" class="form-control" id="expenseAmount" required
-                                    placeholder="0.00">
-                            </div>
-                            <button type="submit" class="btn btn-danger w-100">
-                                <i class="fas fa-minus-circle"></i> Add Expense
-                            </button>
-                        </form>
+                    <h2>Orders List</h2>
+                    <div>
+                        <button class="btn btn-outline-primary me-2" onclick="Print.printOrders()">
+                            <i class="fas fa-print"></i> Print Slips
+                        </button>
+                        <button class="btn btn-outline-success" onclick="Reports.exportCSV()">
+                            <i class="fas fa-file-csv"></i> Export CSV
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <!-- List -->
-            <div class="col-md-8">
                 <div class="card border-0 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Recent Expenses</h5>
-                        <div class="table-container p-0 shadow-none">
-                            <table class="table table-hover" id="expensesTable">
-                                <thead>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0" id="ordersTable">
+                                <thead class="bg-light">
                                     <tr>
+                                        <th>Order ID</th>
                                         <th>Date</th>
-                                        <th>Description</th>
+                                        <th>Customer</th>
                                         <th>Amount</th>
-                                        <th>Action</th>
+                                        <th>Courier</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <!-- JS -->
+                                <tbody id="ordersTableBody">
+                                    <!-- Populated by JS -->
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Reports Section -->
-    <section id="reports" class="content-section d-none">
-        <h2 class="mb-4">Reports</h2>
-        <div class="alert alert-info">Reports module coming soon...</div>
-    </section>
-
-    <!-- Settings Section -->
-    <section id="settings" class="content-section d-none">
-        <h2 class="mb-4">Master Settings</h2>
-        <!-- Tabs -->
-        <ul class="nav nav-tabs mb-4">
-            <li class="nav-item">
-                <a class="nav-link active" data-bs-toggle="tab" href="#profile-settings">Profile</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" href="#api-settings">API Config</a>
-            </li>
-        </ul>
-
-        <div class="tab-content">
-            <div class="tab-pane fade show active" id="profile-settings">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body">
-                        <h5>Business Information</h5>
-                        <form>
-                            <div class="mb-3">
-                                <label>Business Name</label>
-                                <input type="text" class="form-control" value="My Store">
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="tab-pane fade" id="api-settings">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body">
-                        <h5>API Connections</h5>
-                        <div class="mb-3">
-                            <label>Google Apps Script URL</label>
-                            <input type="text" class="form-control" readonly
-                                value="https://script.google.com/macros/s/...">
+                        <div class="p-3 d-flex justify-content-end">
+                            <nav>
+                                <ul class="pagination mb-0" id="pagination"></ul>
+                            </nav>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
+            </section>
 
-    </main>
+            <!-- Products Section -->
+            <section id="products" class="content-section d-none">
+                <h2 class="mb-4">Product Management</h2>
+                <div class="row g-4">
+                    <!-- Add Product Content -->
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">Add Product</h5>
+                                <form id="addProductForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Name</label>
+                                        <input type="text" class="form-control" id="newProductName" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Size/Variant</label>
+                                        <input type="text" class="form-control" id="newProductSize">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Price</label>
+                                        <input type="number" class="form-control" id="newProductPrice" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-success w-100">Add Product</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Product Table -->
+                    <div class="col-md-8">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-0">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Size</th>
+                                            <th>Price</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productsTableBody">
+                                        <!-- JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Expenses Section -->
+            <section id="expenses" class="content-section d-none">
+                <h2 class="mb-4">Expense Tracker</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">New Expense</h5>
+                                <form id="addExpenseForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Description</label>
+                                        <input type="text" class="form-control" id="expenseDesc" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Amount</label>
+                                        <input type="number" class="form-control" id="expenseAmount" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-danger w-100">Add Expense</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-0">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Description</th>
+                                            <th>Amount</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="expensesTableBody">
+                                        <!-- JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="content-section d-none">
+                <h2 class="mb-4">Advanced Reports</h2>
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="reportStart">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="reportEnd">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" id="reportStatus">
+                                    <option value="">All Statuses</option>
+                                    <!-- Populated via JS if needed, or hardcoded options -->
+                                    <option value="Delivered">Delivered</option>
+                                    <option value="Returned">Returned</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button class="btn btn-primary w-100" onclick="Reports.generate()">
+                                    Generate Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Status</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportsTableBody">
+                                <!-- JS -->
+                            </tbody>
+                            <tfoot class="bg-light fw-bold">
+                                <tr id="reportSummary">
+                                    <td colspan="5" class="text-center">Select dates to generate report</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="content-section d-none">
+                <!-- JS injects here usually, but let's provide a container -->
+            </section>
+
+        </main>
+    </div>
 
     <!-- Hidden Print Area -->
     <div id="print-area" class="d-none"></div>
 
-    <!-- VISUAL DEBUG STATUS -->
-    <div id="sys-status"
-        style="position:fixed; bottom:0; left:0; width:100%; background:red; color:white; text-align:center; padding:5px; z-index:9999;">
-        System Status: Waiting for JS... (If this stays Red, JS is broken)
-    </div>
-    </div> <!-- End App Container -->
-
     <!-- Script Imports (FLATTENED & VERSIONED) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="config.js?v=3"></script>
-    <script src="api.js?v=3"></script>
-    <script src="auth.js?v=3"></script>
+    <script src="config.js?v=4"></script>
+    <script src="api.js?v=4"></script>
+    <script src="auth.js?v=4"></script>
 
     <!-- Modules -->
-    <script src="settings.js?v=3"></script>
-    <script src="expenses.js?v=3"></script>
-    <script src="products.js?v=3"></script>
-    <script src="orders.js?v=3"></script>
-    <script src="reports.js?v=3"></script>
-    <script src="dashboard.js?v=3"></script>
-    <script src="print.js?v=3"></script>
+    <script src="settings.js?v=4"></script>
+    <script src="expenses.js?v=4"></script>
+    <script src="products.js?v=4"></script>
+    <script src="orders.js?v=4"></script>
+    <script src="reports.js?v=4"></script>
+    <script src="dashboard.js?v=4"></script>
+    <script src="print.js?v=4"></script>
 
     <!-- Main -->
-    <script src="app.js?v=3"></script>
+    <script src="app.js?v=4"></script>
 </body>
 
 </html>
