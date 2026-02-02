@@ -27,6 +27,10 @@ const API = {
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
             const result = await response.json();
+
+            // Check for Application-Level Errors (e.g. Invalid Action)
+            if (result.error) throw new Error(result.error);
+
             return result;
         } catch (error) {
             console.error(`API Error [${action}]:`, error);
