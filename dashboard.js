@@ -109,12 +109,6 @@ const Dashboard = {
         const today = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY
 
         let todayCount = 0;
-        let pendingCount = 0; // Calculated but not used in display logic below? Used via 'statusCounts'?
-        // Wait, the original code used 'statusCounts' array/object? 
-        // Line 61: statusCounts[STATUSES.BOOKED]...
-        // 'statusCounts' is NOT defined here either! It's defined in renderCharts.
-        // The logic for counts is mixed up.
-
         let deliveredCount = 0;
         let returnedCount = 0;
 
@@ -123,9 +117,6 @@ const Dashboard = {
         let pendingAmount = 0;
         let returnedAmount = 0;
 
-        // Re-calculate Status Counts properly for KPI
-        // We can't rely on 'statusCounts' variable from 'renderCharts' scope.
-        // We need local counters.
         let countBooked = 0;
         let countOut = 0;
         let countOffice = 0;
@@ -170,7 +161,6 @@ const Dashboard = {
         // Pending = Booked + Out + Office
         const totalPending = countBooked + countOut + countOffice;
         this.setSafeText('kpi-pending', totalPending);
-
         this.setSafeText('kpi-delivered', countDelivered);
 
         // Returned = Return + Ready
@@ -218,7 +208,6 @@ const Dashboard = {
                     const d = parseDate(o.date);
                     // Compare including boundaries
                     if (d && d.getTime() >= prevStart.getTime() && d.getTime() <= prevEnd.getTime()) {
-                        // Only Count Delivered or All? Usually Growth is on Revenue (Delivered)
                         if (o.status === STATUSES.DELIVERED) {
                             prevRevenue += o.price;
                         }
