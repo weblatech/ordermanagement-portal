@@ -131,18 +131,9 @@ const App = {
 
         let isDataLoaded = false;
 
-        // 1. Load Cache Immediately
-        const cachedData = localStorage.getItem('oms_orders_cache');
-        if (cachedData) {
-            try {
-                const data = JSON.parse(cachedData);
-                console.log("Loaded from cache");
-                this.renderAll(data);
-                isDataLoaded = true;
-            } catch (e) {
-                console.error("Cache parse error", e);
-            }
-        }
+        // 1. Load Cache Immediately (DISABLED TO FORCE REFRESH)
+        // const cachedData = localStorage.getItem('oms_orders_cache');
+        localStorage.removeItem('oms_orders_cache');
 
         try {
             const res = await API.getOrders();
@@ -186,19 +177,19 @@ const App = {
                         const raw = val(['Date', 'date']);
                         if (!raw) return '-';
 
-                        // Parse Input assuming DD/MM/YYYY (UK/Pakistan Format)
-                        // Inline logic to ensure stability independent of global functions
+                        // Parse Input assuming MM/DD/YYYY (US Format from Google Sheet)
+                        // This resolves the issue where Feb 3rd (02/03) was read as March 2nd
                         let d;
                         const parts = raw.split('/');
                         if (parts.length === 3) {
-                            // parts[0] = Day, parts[1] = Month, parts[2] = Year
-                            // Month is 0-indexed
-                            const day = parseInt(parts[0], 10);
-                            const month = parseInt(parts[1], 10) - 1;
+                            // parts[0] = Month, parts[1] = Day
+                            // Month is 0-indexed in JS Date: new Date(Year, MonthIndex, Day)
+                            const month = parseInt(parts[0], 10) - 1;
+                            const day = parseInt(parts[1], 10);
                             const year = parseInt(parts[2], 10);
                             d = new Date(year, month, day);
                         } else {
-                            // Fallback for ISO or other formats
+                            // Fallback
                             d = new Date(raw);
                         }
 
