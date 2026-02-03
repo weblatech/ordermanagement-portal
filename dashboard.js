@@ -15,13 +15,16 @@ const Dashboard = {
 
         let start = null;
         let end = new Date(today); // Default end is today
+        end.setHours(23, 59, 59, 999); // End of Day
 
         if (range === 'today') {
             start = new Date(today);
         } else if (range === 'yesterday') {
             start = new Date(today);
             start.setDate(today.getDate() - 1);
+
             end = new Date(start);
+            end.setHours(23, 59, 59, 999);
         } else if (range === 'week') {
             // Last 7 Days
             start = new Date(today);
@@ -73,6 +76,7 @@ const Dashboard = {
         if (endInput) {
             const [y, m, d] = endInput.split('-').map(Number);
             this.filterEnd = new Date(y, m - 1, d);
+            this.filterEnd.setHours(23, 59, 59, 999); // Ensure inclusive end date
         } else {
             this.filterEnd = null;
         }
