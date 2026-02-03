@@ -148,11 +148,6 @@ const App = {
 
             console.log("Raw API Data:", rawData); // DEBUG LOG
 
-            if (rawData.length > 0) {
-                const d = rawData[0]['Date'] || rawData[0]['date'];
-                alert("DEBUG: Raw Date from Sheet is: " + d);
-            }
-
             // TEMPORARY DIAGNOSTIC: Removed
             // if (rawData.length > 0) {
             //     alert("COLUMN NAMES FOUND:\n" + Object.keys(rawData[0]).join(", "));
