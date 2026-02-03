@@ -172,6 +172,7 @@ const App = {
 
                 return {
                     id: index + 1,
+                    _rawDate: val(['Date', 'date']), // Store raw for debug
                     // Date: Handle ISO or Simple Date
                     date: (function () {
                         const raw = val(['Date', 'date']);
@@ -257,6 +258,22 @@ const App = {
     renderAll: function (orders) {
         this.state.orders = orders;
         console.log("Orders processed:", this.state.orders.length);
+
+        // DEBUG: Inject Debug Banner
+        const container = document.getElementById('orders');
+        let debugHTML = '<div class="alert alert-warning"><strong>DEBUG DATA (Please report this):</strong><br>';
+        orders.slice(0, 3).forEach((o, i) => {
+            debugHTML += `Order #${o.id}: Raw="${o._rawDate}" | Parsed="${o.date}"<br>`;
+        });
+        debugHTML += '</div>';
+        const existing = document.getElementById('debug-banner');
+        if (existing) existing.remove();
+
+        const banner = document.createElement('div');
+        banner.id = 'debug-banner';
+        banner.innerHTML = debugHTML;
+        container.insertBefore(banner, container.firstChild);
+
         Dashboard.render();
         Orders.render(); // Ensure other modules also update
     },
