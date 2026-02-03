@@ -259,20 +259,14 @@ const App = {
         this.state.orders = orders;
         console.log("Orders processed:", this.state.orders.length);
 
-        // DEBUG: Inject Debug Banner
-        const container = document.getElementById('orders');
-        let debugHTML = '<div class="alert alert-warning"><strong>DEBUG DATA (Please report this):</strong><br>';
-        orders.slice(0, 3).forEach((o, i) => {
-            debugHTML += `Order #${o.id}: Raw="${o._rawDate}" | Parsed="${o.date}"<br>`;
-        });
-        debugHTML += '</div>';
-        const existing = document.getElementById('debug-banner');
-        if (existing) existing.remove();
-
-        const banner = document.createElement('div');
-        banner.id = 'debug-banner';
-        banner.innerHTML = debugHTML;
-        container.insertBefore(banner, container.firstChild);
+        // DEBUG: ALERT for visibility
+        if (orders.length > 0) {
+            let msg = "DEBUG DATA (Report This):\n";
+            orders.slice(0, 3).forEach((o, i) => {
+                msg += `Order #${o.id}: Raw="${o._rawDate}" -> Parsed="${o.date}"\n`;
+            });
+            alert(msg);
+        }
 
         Dashboard.render();
         Orders.render(); // Ensure other modules also update
