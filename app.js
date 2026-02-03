@@ -186,18 +186,23 @@ const App = {
                         const raw = val(['Date', 'date']);
                         if (!raw) return '-';
 
-                        // Parse Input assuming MM/DD/YYYY (US Format from Google Sheet)
-                        // This fixes the issue where Feb 3rd (02/03) is incorrectly read as March 2nd (03/02) by the DD/MM parser
-                        const parts = raw.split('/');
+                        // Parse Input assuming DD/MM/YYYY (UK/Pakistan Format)
+                        // Inline logic to ensure stability independent of global functions
                         let d;
+                        const parts = raw.split('/');
                         if (parts.length === 3) {
-                            // Month is 0-indexed in JS Date: new Date(Year, MonthIndex, Day)
-                            // parts[0] is Month, parts[1] is Day
-                            d = new Date(parts[2], parseInt(parts[0]) - 1, parts[1]);
+                            // parts[0] = Day, parts[1] = Month, parts[2] = Year
+                            // Month is 0-indexed
+                            const day = parseInt(parts[0], 10);
+                            const month = parseInt(parts[1], 10) - 1;
+                            const year = parseInt(parts[2], 10);
+                            d = new Date(year, month, day);
                         } else {
+                            // Fallback for ISO or other formats
                             d = new Date(raw);
                         }
 
+                        // Return in DD/MM/YYYY format for consistency
                         return d && !isNaN(d) ? d.toLocaleDateString('en-GB') : '-';
                     })(),
 
