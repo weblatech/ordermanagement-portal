@@ -123,7 +123,10 @@ const Dashboard = {
     },
 
     updateKPIs: function (orders, allOrders) {
-        const today = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY
+        // Robust 'Today' Comparison
+        const now = new Date();
+        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).getTime();
 
         let todayCount = 0;
         let deliveredCount = 0;
@@ -142,9 +145,13 @@ const Dashboard = {
         let countReadyReturn = 0;
 
         orders.forEach(order => {
-            // Check Date
-            if (order.date === today || order.date.startsWith(today)) {
-                todayCount++;
+            // Check Date (Robust)
+            const d = parseDate(order.date);
+            if (d) {
+                const time = d.getTime();
+                if (time >= startOfDay && time <= endOfDay) {
+                    todayCount++;
+                }
             }
 
             // Financials
