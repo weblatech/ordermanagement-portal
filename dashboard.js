@@ -85,11 +85,24 @@ const Dashboard = {
     },
 
     getFilteredOrders: function (orders) {
-        if (!this.filterStart || !this.filterEnd) return orders;
+        // If no filter set, return all
+        if (!this.filterStart && !this.filterEnd) return orders;
+
         return orders.filter(o => {
-            const d = parseDate(o.date);
-            // Compare timestamps
-            return d && d.getTime() >= this.filterStart.getTime() && d.getTime() <= this.filterEnd.getTime();
+            const d = parseDate(o.date); // Provided by config.js or global helper
+            if (!d) return false;
+
+            const time = d.getTime();
+            let isValid = true;
+
+            if (this.filterStart) {
+                isValid = isValid && (time >= this.filterStart.getTime());
+            }
+            if (this.filterEnd) {
+                isValid = isValid && (time <= this.filterEnd.getTime());
+            }
+
+            return isValid;
         });
     },
 

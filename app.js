@@ -178,14 +178,14 @@ const App = {
                         const raw = val(['Date', 'date']);
                         if (!raw) return '-';
 
-                        // Parse Input assuming MM/DD/YYYY (US Format from Google Sheet)
-                        // Verified that data source provides Month-First format (02/03 = Feb 3rd)
+                        // Parse Input assuming DD/MM/YYYY (Pakistani/UK Format)
+                        // User confirmation: Primary format is Day/Month/Year
                         let d;
                         const parts = raw.split('/');
                         if (parts.length === 3) {
-                            // US Format: Month/Day/Year
-                            const month = parseInt(parts[0], 10) - 1; // Month is 0-indexed
-                            const day = parseInt(parts[1], 10);
+                            // Format: Day/Month/Year
+                            const day = parseInt(parts[0], 10);
+                            const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
                             const year = parseInt(parts[2], 10);
                             d = new Date(year, month, day);
                         } else {
@@ -194,8 +194,7 @@ const App = {
 
                         if (!d || isNaN(d.getTime())) return '-';
 
-                        // MANUALLY Format as DD/MM/YYYY (UK/Pakistan Standard)
-                        // This guarantees the Dashboard (which expects DD/MM) receives the correct string
+                        // Format as DD/MM/YYYY
                         const dd = String(d.getDate()).padStart(2, '0');
                         const mm = String(d.getMonth() + 1).padStart(2, '0');
                         const yyyy = d.getFullYear();
@@ -258,15 +257,6 @@ const App = {
     renderAll: function (orders) {
         this.state.orders = orders;
         console.log("Orders processed:", this.state.orders.length);
-
-        // DEBUG: ALERT for visibility
-        if (orders.length > 0) {
-            let msg = "DEBUG DATA (Report This):\n";
-            orders.slice(0, 3).forEach((o, i) => {
-                msg += `Order #${o.id}: Raw="${o._rawDate}" -> Parsed="${o.date}"\n`;
-            });
-            alert(msg);
-        }
 
         Dashboard.render();
         Orders.render(); // Ensure other modules also update
