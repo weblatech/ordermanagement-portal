@@ -178,23 +178,26 @@ const App = {
                         if (!raw) return '-';
 
                         // Parse Input assuming MM/DD/YYYY (US Format from Google Sheet)
-                        // This resolves the issue where Feb 3rd (02/03) was read as March 2nd
                         let d;
                         const parts = raw.split('/');
                         if (parts.length === 3) {
-                            // parts[0] = Month, parts[1] = Day
-                            // Month is 0-indexed in JS Date: new Date(Year, MonthIndex, Day)
+                            // US Format: Month/Day/Year
                             const month = parseInt(parts[0], 10) - 1;
                             const day = parseInt(parts[1], 10);
                             const year = parseInt(parts[2], 10);
                             d = new Date(year, month, day);
                         } else {
-                            // Fallback
                             d = new Date(raw);
                         }
 
-                        // Return in DD/MM/YYYY format for consistency
-                        return d && !isNaN(d) ? d.toLocaleDateString('en-GB') : '-';
+                        if (!d || isNaN(d.getTime())) return '-';
+
+                        // MANUALLY Format as DD/MM/YYYY (UK/Pakistan Standard)
+                        // This guarantees the Dashboard (which expects DD/MM) receives the correct string
+                        const dd = String(d.getDate()).padStart(2, '0');
+                        const mm = String(d.getMonth() + 1).padStart(2, '0');
+                        const yyyy = d.getFullYear();
+                        return `${dd}/${mm}/${yyyy}`;
                     })(),
 
                     customer: val(['Customer', 'customer', 'Name', 'name', 'Customer Name', 'customer name']),
