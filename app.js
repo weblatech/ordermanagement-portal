@@ -182,7 +182,13 @@ const App = {
                 return {
                     id: index + 1,
                     // Date: Handle ISO or Simple Date
-                    date: val(['Date', 'date']) ? new Date(val(['Date', 'date'])).toLocaleDateString('en-GB') : '-',
+                    date: (function () {
+                        const raw = val(['Date', 'date']);
+                        if (!raw) return '-';
+                        // Use global parseDate if available (defined in config.js) for DD/MM/YYYY
+                        const d = (typeof parseDate === 'function') ? parseDate(raw) : new Date(raw);
+                        return d && !isNaN(d) ? d.toLocaleDateString('en-GB') : '-';
+                    })(),
 
                     customer: val(['Customer', 'customer', 'Name', 'name', 'Customer Name', 'customer name']),
 
