@@ -177,14 +177,14 @@ const App = {
                         const raw = val(['Date', 'date']);
                         if (!raw) return '-';
 
-                        // Parse Input assuming DD/MM/YYYY (UK/Pakistan Format)
-                        // This matches the verified input format "03/02/2026" for Feb 3rd
+                        // Parse Input assuming MM/DD/YYYY (US Format from Google Sheet)
+                        // Verified that data source provides Month-First format (02/03 = Feb 3rd)
                         let d;
                         const parts = raw.split('/');
                         if (parts.length === 3) {
-                            // UK Format: Day/Month/Year
-                            const day = parseInt(parts[0], 10);
-                            const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+                            // US Format: Month/Day/Year
+                            const month = parseInt(parts[0], 10) - 1; // Month is 0-indexed
+                            const day = parseInt(parts[1], 10);
                             const year = parseInt(parts[2], 10);
                             d = new Date(year, month, day);
                         } else {
